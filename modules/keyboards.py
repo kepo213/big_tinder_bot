@@ -3,16 +3,26 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 
 send_contact = KeyboardButton(text=f'📞Поделится контактом', request_contact=True)
-
 send_contact_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(send_contact)
+
+
+def get_geo():
+    send_contact = KeyboardButton(text=f'🗺 Определить автоматически', request_location=True)
+    send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(send_contact)
+    return send_geo_kb
+
+
+def get_photo():
+    send_contact = KeyboardButton(text=f'Взять из профиля')
+    send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(send_contact)
+    return send_geo_kb
 
 
 def start_user_kb():
     ru_lang = InlineKeyboardButton(text='🇷🇺 Русский', callback_data='ru_lang')
-    en_lang = InlineKeyboardButton(text='🇺🇸 English', callback_data='en_lang')
+    en_lang = InlineKeyboardButton(text='🇬🇧 English', callback_data='en_lang')
     start_kb = InlineKeyboardMarkup()
-    start_kb.add(ru_lang)
-    start_kb.add(en_lang)
+    start_kb.add(ru_lang, en_lang)
     return start_kb
 
 
@@ -25,11 +35,19 @@ def main_user_kb():
     premium = KeyboardButton(text='💎 Премиум')
     settings = KeyboardButton(text='⚙️ Настройка')
     bot_help = KeyboardButton(text='📌 Помощь')
-    start_kb = ReplyKeyboardMarkup()
+    start_kb = ReplyKeyboardMarkup(resize_keyboard=True)
     start_kb.add(find_pare, chat_roll)
     start_kb.add(likes, my_profile)
     start_kb.add(compatibility, premium)
     start_kb.add(settings, bot_help)
+    return start_kb
+
+
+def user_sex_kb():
+    find_pare = KeyboardButton(text='М')
+    chat_roll = KeyboardButton(text='Ж')
+    start_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+    start_kb.add(find_pare, chat_roll)
     return start_kb
 
 
@@ -67,13 +85,16 @@ def without_media():
 
 
 # клавиатура для админа стартовая
-def confirm():
+def confirm(withot_back=False):
     yes_all_good = InlineKeyboardButton(text=f'Да все хорошо!', callback_data=f'yes_all_good')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     user_main = InlineKeyboardMarkup()
     user_main.add(yes_all_good)
-    user_main.add(back)
-    return user_main
+    if withot_back:
+        return user_main
+    else:
+        user_main.add(back)
+        return user_main
 
 
 # клавиатура для админа стартовая

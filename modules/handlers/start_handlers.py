@@ -101,3 +101,9 @@ async def start_menu(message: types.Message):
     await message.answer(f'Успешно {number}, ошибок {bad}\n\nЗагружаю')
     with open("all_users.xlsx", 'rb') as file:
         await bot.send_document(chat_id=message.from_user.id, document=file, caption="Все сделано!")
+
+
+# Get users
+# @dp.message_handler(not_all_profile=True, state='*')
+# async def start_menu(message: types.Message):
+#     await message.answer(f'Начал собирать файл')

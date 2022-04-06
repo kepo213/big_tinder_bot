@@ -30,3 +30,8 @@ class Admin_sender(StatesGroup):
 class User(StatesGroup):
     start = State()
     set_name = State()
+    set_age = State()
+    set_sex = State()
+    set_geo = State()
+    set_geo_confirm = State()
+    set_photo = State()

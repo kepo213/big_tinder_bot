@@ -47,10 +47,10 @@ def create_fast_info_table():
             cursor.execute(f'''CREATE TABLE IF NOT EXISTS fast_info (
              id SERIAL PRIMARY KEY,
              tg_id BIGINT UNIQUE,
-             data_1 TEXT,
-             data_2 TEXT,
-             data_3 TEXT,
-             data_4 TEXT,
+             user_age BIGINT,
+             user_sex TEXT,
+             city TEXT,
+             photo_id TEXT DEFAULT '0',
              data_5 TEXT)''')
             data_base.commit()
     except Exception as _ex:
@@ -231,6 +231,25 @@ def read_all_2(
         db = create_db_connect()
         with db.cursor() as cursor:
             cursor.execute(f"SELECT {name} FROM {table} WHERE {id_name}=(%s) AND {id_name2}=(%s)", (id_data, id_data2))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+    finally:
+        if db:
+            db.close()
+
+
+# Собираем все записи с фильтрацией по 3 параметрам
+def join_help_all(id_data: int):
+    global db
+    try:
+        db = create_db_connect()
+        with db.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, all_users.user_name, all_users.language, fast_info.user_age, "
+                           f"fast_info.city, fast_info.photo "
+                           f"FROM all_users JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE all_users.tg_id=(%s)", (id_data,))
             data = cursor.fetchall()
             return data
 

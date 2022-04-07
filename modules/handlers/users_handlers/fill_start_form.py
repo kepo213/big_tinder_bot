@@ -67,9 +67,9 @@ async def fill_form(message: types.Message):
 
 @dp.message_handler(state=User.set_sex)
 async def fill_form(message: types.Message):
-    if message.text.lower() == 'м':
+    if message.text.lower() == 'парень':
         update_db(table='fast_info', name='user_sex', data='men', id_data=message.from_user.id)
-    elif message.text.lower() == 'ж':
+    elif message.text.lower() == 'девушка':
         update_db(table='fast_info', name='user_sex', data='female', id_data=message.from_user.id)
     else:
         await message.answer('Нажми на кнопку ниже!', reply_markup=user_sex_kb())
@@ -139,6 +139,7 @@ async def fill_form(message: types.Message):
             await message.answer('✅ Регистрация вашей анкеты завершена!\n'
                                  '👩‍❤️‍👨 Чтобы найти пару воспользуйтесь меню ниже, или командой: /love\n'
                                  '📂 Команда для вызова меню: /start', reply_markup=main_user_kb())
+            await User.start.set()
         else:
             await message.answer('Во время проверки вашего фото мы обнаружили подозрительный контент!\n'
                                  'Возможные причины:\n'
@@ -155,8 +156,11 @@ async def fill_form(message: types.Message):
     if message.text == 'Взять из профиля':
         file_name = f"{str(message.from_user.id)}.jpg"
         photo = await message.from_user.get_profile_photos()
-        await photo.photos[0][2].download(destination_file=f'modules/functions/{file_name}')
-        faces_number = search_face(file_name=file_name)
+        if str(photo.photos) == '[]':
+            faces_number = 1000
+        else:
+            await photo.photos[0][-1].download(destination_file=f'modules/functions/{file_name}')
+            faces_number = search_face(file_name=file_name)
         if faces_number == 1:
             update_db(name='status', data='active', id_data=message.from_user.id)
             update_db(table='fast_info', name='photo_id', data=photo.photos[0][-1].file_id, id_data=message.from_user.id)
@@ -168,6 +172,8 @@ async def fill_form(message: types.Message):
                                  'Возможные причины:\n'
                                  '- на фото нет лица или не обнаружено реального человека;\n'
                                  '- на фото более одного человека;')
+        if faces_number == 1000:
+            return
         os.remove(f'modules/functions/{file_name}')
     else:
         await message.answer('Я жду от тебя фото.')

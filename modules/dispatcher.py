@@ -1,5 +1,6 @@
 from aiogram import Bot, Dispatcher
 from modules.setings import MainSettings
+from modules.filters import NotAllProfile
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
@@ -14,6 +15,8 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(telegram_token)
 dp = Dispatcher(bot, storage=storage)
 
+# Включаем фильтры
+dp.filters_factory.bind(NotAllProfile)
 
 class Admin(StatesGroup):
     start = State()

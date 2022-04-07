@@ -20,9 +20,17 @@ def get_photo():
 
 def start_user_kb():
     ru_lang = InlineKeyboardButton(text='🇷🇺 Русский', callback_data='ru_lang')
-    en_lang = InlineKeyboardButton(text='🇬🇧 English', callback_data='en_lang')
+    en_lang = InlineKeyboardButton(text='🇺🇸 English', callback_data='en_lang')
     start_kb = InlineKeyboardMarkup()
     start_kb.add(ru_lang, en_lang)
+    return start_kb
+
+
+def compotibility_kb():
+    ru_lang = InlineKeyboardButton(text='❤️‍🔥 Проверить совместимость',
+                                   url='https://t.me/BeRelaxBot?start=compatibility_ru')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(ru_lang)
     return start_kb
 
 
@@ -44,8 +52,8 @@ def main_user_kb():
 
 
 def user_sex_kb():
-    find_pare = KeyboardButton(text='М')
-    chat_roll = KeyboardButton(text='Ж')
+    find_pare = KeyboardButton(text='Парень')
+    chat_roll = KeyboardButton(text='Девушка')
     start_kb = ReplyKeyboardMarkup(resize_keyboard=True)
     start_kb.add(find_pare, chat_roll)
     return start_kb

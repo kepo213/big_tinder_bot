@@ -248,7 +248,7 @@ def join_help_all(id_data: int):
         db = create_db_connect()
         with db.cursor() as cursor:
             cursor.execute(f"SELECT all_users.tg_id, all_users.user_name, all_users.language, fast_info.user_age, "
-                           f"fast_info.city, fast_info.photo "
+                           f"fast_info.city, fast_info.photo_id "
                            f"FROM all_users JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE all_users.tg_id=(%s)", (id_data,))
             data = cursor.fetchall()
             return data

@@ -28,6 +28,7 @@ async def start_menu(message: types.Message):
         update_db(table="all_users", name="status", data="active", id_data=message.from_user.id)
     elif user_data[0][3] == 'need_reg':
         insert_user(tg_id=message.from_user.id, name=message.from_user.first_name)
+        await message.answer(text='Ваша регистрация не была завершена! Заполните ее заново!')
         await message.answer(text='🇷🇺 Выберите язык:\n'
                                   '🇺🇸 Select a language:', reply_markup=start_user_kb())
     else:
@@ -101,9 +102,3 @@ async def start_menu(message: types.Message):
     await message.answer(f'Успешно {number}, ошибок {bad}\n\nЗагружаю')
     with open("all_users.xlsx", 'rb') as file:
         await bot.send_document(chat_id=message.from_user.id, document=file, caption="Все сделано!")
-
-
-# Get users
-# @dp.message_handler(not_all_profile=True, state='*')
-# async def start_menu(message: types.Message):
-#     await message.answer(f'Начал собирать файл')

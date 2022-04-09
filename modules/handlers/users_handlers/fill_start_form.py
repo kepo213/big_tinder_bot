@@ -8,8 +8,8 @@ from aiogram.dispatcher.filters import Text
 from modules.handlers.handlers_func import edit_text_call
 from modules.sql_func import insert_user, read_by_name, all_users_table, \
     update_db, create_fast_info_table, sender_table, read_all
-from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User
+from modules.functions.simple_funcs import update_age_period
 from aiogram.dispatcher import FSMContext
 from modules.keyboards import user_sex_kb, get_geo, get_photo, confirm, main_user_kb
 
@@ -58,6 +58,7 @@ async def fill_form(message: types.Message):
             await message.answer('В Японии самый старый человек мира Кане Танака отпраздновала 119-летие.\n'
                                  'Ты не можешь быть таким старым!')
         else:
+            update_age_period(age=user_age, tg_ig=message.from_user.id)
             update_db(table='fast_info', name='user_age', data=user_age, id_data=message.from_user.id)
             await message.answer('🚻 Выберите <b>Ваш пол:</b>', parse_mode='html', reply_markup=user_sex_kb())
             await User.set_sex.set()
@@ -111,7 +112,7 @@ async def fill_form(message: types.Message):
         else:
             await message.answer(f'Я нашел такой адрес:\n'
                                  f'<b>{city}</b>\n'
-                                 f'Если все правильно то подтвердите.', reply_markup=confirm(True), parse_mode='html')
+                                 f'Если все правильно то подтвердите.', reply_markup=confirm(without_back=True), parse_mode='html')
             update_db(table='fast_info', name='city', data=city, id_data=message.from_user.id)
             await User.set_geo.set()
     except:
@@ -167,6 +168,7 @@ async def fill_form(message: types.Message):
             await message.answer('✅ Регистрация вашей анкеты завершена!\n'
                                  '👩‍❤️‍👨 Чтобы найти пару воспользуйтесь меню ниже, или командой: /love\n'
                                  '📂 Команда для вызова меню: /start', reply_markup=main_user_kb())
+            await User.start.set()
         else:
             await message.answer('Во время проверки вашего фото мы обнаружили подозрительный контент!\n'
                                  'Возможные причины:\n'

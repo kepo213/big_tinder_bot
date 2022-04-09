@@ -6,6 +6,7 @@ from modules.keyboards import compotibility_kb
 
 
 # Start menu
+@dp.message_handler(commands=['like'], state='*')
 @dp.message_handler(Text(equals='❤️‍🔥 Совместимость', ignore_case=True), state='*')
 async def start_menu(message: types.Message):
     # Обновляем данные пользователя в базе данных

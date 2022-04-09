@@ -38,6 +38,7 @@ async def start_menu(message: types.Message):
 
 
 # Start menu
+@dp.message_handler(commands=['info'], state='*')
 @dp.message_handler(Text(equals='📌 Помощь', ignore_case=True), state='*')
 async def start_menu(message: types.Message):
     # Обновляем данные пользователя в базе данных

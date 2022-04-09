@@ -3,7 +3,7 @@ from main import dp
 from aiogram.dispatcher.filters import Text
 import logging
 from modules.sql_func import insert_user, read_by_name, all_users_table, \
-    update_db, create_fast_info_table, sender_table, read_all
+    update_db, create_fast_info_table, sender_table, read_all, photo_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User
 from aiogram.dispatcher import FSMContext
@@ -50,6 +50,7 @@ async def start_menu(message: types.Message):
     create_fast_info_table()
     all_users_table()
     sender_table()
+    photo_table()
     await message.answer(text='Я создал все базы данных')
 
 

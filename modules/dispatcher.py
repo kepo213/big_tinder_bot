@@ -18,6 +18,7 @@ dp = Dispatcher(bot, storage=storage)
 # Включаем фильтры
 dp.filters_factory.bind(NotAllProfile)
 
+
 class Admin(StatesGroup):
     start = State()
 
@@ -38,3 +39,28 @@ class User(StatesGroup):
     set_geo = State()
     set_geo_confirm = State()
     set_photo = State()
+
+
+class UserSettings(StatesGroup):
+    start = State()
+    range_period = State()
+    language = State()
+
+    age_period = State()
+    age_period_max = State()
+
+
+class UserProfile(StatesGroup):
+    start = State()
+    name = State()
+    age = State()
+
+    sex = State()
+    city = State()
+    photo = State()
+
+    about = State()
+    emoji = State()
+    zodiac = State()
+
+    Instagram = State()

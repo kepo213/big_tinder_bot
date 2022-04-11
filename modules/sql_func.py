@@ -69,6 +69,7 @@ def create_fast_info_table():
              search_status INTEGER DEFAULT 1,
              age_min BIGINT DEFAULT 18,
              age_max BIGINT DEFAULT 24,
+             balls_balance BIGINT DEFAULT 100,
              fast_1 TEXT DEFAULT '0',
              fast_2 TEXT DEFAULT '0',
              fast_3 TEXT DEFAULT '0')''')
@@ -95,6 +96,22 @@ def sender_table():
         print('[INFO] Error while working with db', _ex)
 
 
+# Админ создает таблицу для рассылки
+def reffs_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS reff (
+             id SERIAL PRIMARY KEY,
+             tg_id BIGINT UNIQUE,
+             mentor_tg_id BIGINT DEFAULT '0',
+             date timestamp
+             )''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
 # Добавляем данные новому пользователю
 def insert_user(name: str, tg_id: str, table: str = 'all_users'):
     global data_base
@@ -108,6 +125,20 @@ def insert_user(name: str, tg_id: str, table: str = 'all_users'):
             cursor.execute(f"INSERT INTO fast_info (tg_id) "
                            f"VALUES (%s) "
                            f"ON CONFLICT DO NOTHING;", (tg_id,))
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Добавляем данные новому пользователю
+def reff_user(tg_id: str, mentor_tg_id: str):
+    global data_base
+    data_now = datetime.datetime.now()
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"INSERT INTO reff (tg_id, mentor_tg_id, date) "
+                           f"VALUES (%s, %s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (tg_id, mentor_tg_id, data_now))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -130,6 +161,17 @@ def update_db(data, name: str, id_data, id_name: str = 'tg_id', table: str = 'al
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f"UPDATE {table} SET {name}=(%s) WHERE {id_name}=(%s)", (data, id_data))
+            data_base.commit()
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Обновляем данные в базе данных
+def grow_balls_db(data, id_name: str = 'tg_id'):
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"UPDATE fast_info SET balls_balance = balls_balance + 50 WHERE {id_name}=(%s)", (data, ))
             data_base.commit()
 
     except Exception as _ex:
@@ -228,6 +270,51 @@ def join_help_all(id_data: int):
                            f"fast_info.city, fast_info.photo_id "
                            f"FROM all_users JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE "
                            f"all_users.tg_id=(%s)", (id_data,))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 3 параметрам
+def join_reff_block(tg_id: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT reff.tg_id, reff.mentor_tg_id, all_users.status "
+                           f"FROM reff JOIN all_users ON reff.tg_id = all_users.tg_id WHERE "
+                           f"reff.mentor_tg_id = (%s) AND all_users.status = 'close'", (tg_id,))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 3 параметрам
+def join_reff_premium(tg_id: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT reff.tg_id, reff.mentor_tg_id, fast_info.premium "
+                           f"FROM reff JOIN fast_info ON reff.tg_id = fast_info.tg_id WHERE "
+                           f"reff.mentor_tg_id = (%s) AND fast_info.premium = '1'", (tg_id,))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 3 параметрам
+def join_reff_photo(tg_id: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT reff.tg_id, reff.mentor_tg_id, fast_info.photo_id "
+                           f"FROM reff JOIN fast_info ON reff.tg_id = fast_info.tg_id WHERE "
+                           f"reff.mentor_tg_id = (%s) AND fast_info.photo_id = '0'", (tg_id,))
             data = cursor.fetchall()
             return data
 

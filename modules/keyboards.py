@@ -23,12 +23,16 @@ def get_photo(close_it: bool = False):
     return send_geo_kb
 
 
-def reff_kb(url: str):
+def reff_kb(url: str, back: bool = False):
     ru_lang = InlineKeyboardButton(text='🫂Пригласить друга',
                                    switch_inline_query=f"❤️‍🔥Вас пригласили в бот знакомств:\n\n{url}")
-    en_lang = InlineKeyboardButton(text='Твоя статистика', callback_data='en_lang')
+    en_lang = InlineKeyboardButton(text='Параметры', callback_data='premium_reff')
+    back_btn = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     start_kb = InlineKeyboardMarkup()
-    start_kb.add(ru_lang, en_lang)
+    if back:
+        start_kb.add(ru_lang, back_btn)
+    else:
+        start_kb.add(ru_lang, en_lang)
     return start_kb
 
 

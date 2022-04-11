@@ -2,8 +2,9 @@ from aiogram import types
 from main import dp
 from aiogram.dispatcher.filters import Text
 import logging
+from modules.functions.simple_funcs import start_reffs
 from modules.sql_func import insert_user, read_by_name, all_users_table, \
-    update_db, create_fast_info_table, sender_table, read_all, photo_table
+    update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User
 from aiogram.dispatcher import FSMContext
@@ -15,10 +16,12 @@ from modules.keyboards import start_user_kb, start_admin_kb, main_user_kb
 async def start_menu(message: types.Message):
     # Обновляем данные пользователя в базе данных
     user_data = read_by_name(id_data=message.from_user.id)
-    if str(user_data) == '[]':
+    if str(user_data) == '[]' and not message.text.startswith('/start reff'):
         insert_user(tg_id=message.from_user.id, name=message.from_user.first_name)
         await message.answer(text='🇷🇺 Выберите язык:\n'
                                   '🇺🇸 Select a language:', reply_markup=start_user_kb())
+    elif str(user_data) == '[]' and message.text.startswith('/start reff'):
+        await start_reffs(message)
     elif user_data[0][3] == 'admin':
         await message.answer('Привет админ', reply_markup=start_admin_kb())
         await Admin.start.set()
@@ -51,6 +54,7 @@ async def start_menu(message: types.Message):
     all_users_table()
     sender_table()
     photo_table()
+    reffs_table()
     await message.answer(text='Я создал все базы данных')
 
 

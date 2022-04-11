@@ -103,3 +103,13 @@ async def start_menu(message: types.Message):
     await message.answer(f'Успешно {number}, ошибок {bad}\n\nЗагружаю')
     with open("all_users.xlsx", 'rb') as file:
         await bot.send_document(chat_id=message.from_user.id, document=file, caption="Все сделано!")
+
+
+# # Start menu
+# @dp.message_handler(state='*', content_types=types.ContentType.ANY)
+# async def start_menu(message: types.Message):
+#     print(message.photo[0].file_id)
+#     try:
+#         await message.answer(message.forward_from_chat.id)
+#     except:
+#         pass

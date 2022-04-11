@@ -22,3 +22,6 @@ class MainSettings:
 
     def server(self):
         return str(self.tg_data['server_promo_cod'])
+
+    def admin(self):
+        return str(self.tg_data['admin_id'])

@@ -64,3 +64,7 @@ class UserProfile(StatesGroup):
     zodiac = State()
 
     Instagram = State()
+    verification = State()
+
+class UserPremium(StatesGroup):
+    start = State()

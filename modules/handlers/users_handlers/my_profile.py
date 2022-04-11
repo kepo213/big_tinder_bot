@@ -3,12 +3,13 @@ import emoji
 
 from aiogram import types
 from main import dp
+from modules.dispatcher import constant
 from aiogram.dispatcher.filters import Text
-
 
 from modules.dispatcher import bot, UserProfile
 from modules.functions.check_photo import search_face
-from modules.keyboards import user_sex_kb, user_profile_kb, close_it, get_geo, confirm, get_photo, zodiac_kb
+from modules.keyboards import user_sex_kb, user_profile_kb, close_it, get_geo, confirm, get_photo, zodiac_kb, \
+    user_verifikation_kb
 from modules.functions.work_with_geo import adres_from_adres, cords_to_address
 from modules.sql_func import update_db, read_by_name, join_profile_all
 from modules.handlers.handlers_func import edit_text_call
@@ -65,14 +66,16 @@ def settings_text(user_id: int):
 
 
 async def send_main_text(user_id: int):
-    status = read_by_name(table='fast_info', name='search_status', id_data=user_id)[0][0]
+    data = read_by_name(table='fast_info', name='search_status, photo_good', id_data=user_id)[0]
+    status = int(data[0])
+    photo = int(data[1])
     text, photo_id = settings_text(user_id)
     try:
         await bot.send_photo(caption=text, photo=photo_id, chat_id=user_id,
-                             reply_markup=user_profile_kb(int(status)), parse_mode='html')
+                             reply_markup=user_profile_kb(status, photo), parse_mode='html')
     except:
         await bot.send_message(text=text, chat_id=user_id,
-                               reply_markup=user_profile_kb(int(status)), parse_mode='html')
+                               reply_markup=user_profile_kb(status, photo), parse_mode='html')
     await UserProfile.start.set()
 
 
@@ -84,6 +87,7 @@ async def start_menu(message: types.Message):
 
 
 # Profile menu
+@dp.callback_query_handler(state=UserProfile.verification, text='close_it')
 @dp.callback_query_handler(state=UserProfile.zodiac, text='close_it')
 @dp.callback_query_handler(state=UserProfile.about, text='close_it')
 @dp.callback_query_handler(state=UserProfile.city, text='back')
@@ -160,7 +164,6 @@ async def start_menu(call: types.CallbackQuery):
 # Profile SEX menu
 @dp.message_handler(state=UserProfile.sex)
 async def start_menu(message: types.Message):
-
     if message.text.lower() == 'парень':
         update_db(table='fast_info', name='user_sex', data='men', id_data=message.from_user.id)
     elif message.text.lower() == 'девушка':
@@ -184,7 +187,6 @@ async def start_menu(call: types.CallbackQuery):
 # Profile CITY menu
 @dp.message_handler(state=UserProfile.city)
 async def start_menu(message: types.Message):
-
     try:
         city = adres_from_adres(message.text)
         if city == 'Error':
@@ -275,7 +277,8 @@ async def fill_form(message: types.Message):
             faces_number = search_face(file_name=file_name)
         if faces_number == 1:
             update_db(name='status', data='active', id_data=message.from_user.id)
-            update_db(table='fast_info', name='photo_id', data=photo.photos[0][-1].file_id, id_data=message.from_user.id)
+            update_db(table='fast_info', name='photo_id', data=photo.photos[0][-1].file_id,
+                      id_data=message.from_user.id)
             await message.answer('Ваша фотография добавлена!')
             # Send main profile text
             await send_main_text(message.from_user.id)
@@ -420,3 +423,26 @@ async def start_menu(call: types.CallbackQuery):
         await edit_text_call(call=call, text='🙅Вы скрыли свою анкету в поиске!')
     # Send main profile text
     await send_main_text(call.from_user.id)
+
+
+# Profile Close/Open profile menu
+@dp.callback_query_handler(state=UserProfile.start, text='profile_good')
+async def start_menu(call: types.CallbackQuery):
+    photo_id = 'AgACAgIAAxkBAAIMP2JS1kOXbq8h1O1NoDg1L04NXPaVAAJvvjEb1JeRSiI8rJlH0iwVAQADAgADcwADIwQ'
+    await bot.send_photo(chat_id=call.message.chat.id, photo=photo_id, parse_mode='html',
+                         caption='Ваше фото не подтверждено, чтобы получить галочку, вам нужно отправить '
+                                 'Вашу фотографию как показано на этом примере, не волнуйтесь, её никто не '
+                                 'увидит, она необходима только для верификации.\n\n'
+                                 '<b>Важно, у вас должна быть рука именно в таком же положение иначе бот не '
+                                 'сможет одобрить вам верификацию!</b>', reply_markup=close_it())
+    await UserProfile.verification.set()
+
+
+# Start menu
+@dp.message_handler(state=UserProfile.verification, content_types=types.ContentType.PHOTO)
+async def start_menu(message: types.Message):
+    await message.answer('Ваше фото Отправлено на верификацию')
+    await bot.send_photo(chat_id=constant.admin(), photo=message.photo[0].file_id,
+                         caption=f'Пользователь с id: {message.from_user.id}',
+                         reply_markup=user_verifikation_kb(message.from_user.id))
+    await UserProfile.start.set()

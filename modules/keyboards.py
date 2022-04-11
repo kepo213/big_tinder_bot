@@ -23,11 +23,28 @@ def get_photo(close_it: bool = False):
     return send_geo_kb
 
 
+def reff_kb(url: str):
+    ru_lang = InlineKeyboardButton(text='🫂Пригласить друга',
+                                   switch_inline_query=f"❤️‍🔥Вас пригласили в бот знакомств:\n\n{url}")
+    en_lang = InlineKeyboardButton(text='Твоя статистика', callback_data='en_lang')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(ru_lang, en_lang)
+    return start_kb
+
+
 def start_user_kb():
     ru_lang = InlineKeyboardButton(text='🇷🇺 Русский', callback_data='ru_lang')
     en_lang = InlineKeyboardButton(text='🇺🇸 English', callback_data='en_lang')
     start_kb = InlineKeyboardMarkup()
     start_kb.add(ru_lang, en_lang)
+    return start_kb
+
+
+def user_verifikation_kb(user_id: int):
+    verifikation = InlineKeyboardButton(text='Подтвердить', callback_data=f'verifikation_{user_id}')
+    verifikation_close = InlineKeyboardButton(text='Отклонить', callback_data=f'verifikation_close_{user_id}')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(verifikation, verifikation_close)
     return start_kb
 
 
@@ -56,7 +73,7 @@ def main_user_kb():
     return start_kb
 
 
-def user_profile_kb(status: int):
+def user_profile_kb(status: int, photo: int):
     profile_name = InlineKeyboardButton(text='👤 Имя', callback_data='profile_name')
     profile_age = InlineKeyboardButton(text='🔞 Возраст', callback_data='profile_age')
     profile_sex = InlineKeyboardButton(text='🚻 Пол:', callback_data='profile_sex')
@@ -74,13 +91,17 @@ def user_profile_kb(status: int):
         profile_close = InlineKeyboardButton(text='🙅Скрыть анкету', callback_data='profile_close')
     else:
         profile_close = InlineKeyboardButton(text='🙋Показать анкету', callback_data='profile_close')
+
     profile_good = InlineKeyboardButton(text='✖️ Фото не подтверждено', callback_data='profile_good')
     start_kb = InlineKeyboardMarkup()
     start_kb.add(profile_name, profile_age, profile_sex)
     start_kb.add(profile_city, profile_photo, profile_about)
     start_kb.add(profile_emoji, profile_zodiac, profile_insta)
     start_kb.add(profile_close)
-    start_kb.add(profile_good)
+    if photo == 0:
+        start_kb.add(profile_good)
+    else:
+        pass
     return start_kb
 
 

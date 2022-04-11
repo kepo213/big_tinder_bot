@@ -11,7 +11,7 @@ from modules.functions.check_photo import search_face
 from modules.keyboards import user_sex_kb, user_profile_kb, close_it, get_geo, confirm, get_photo, zodiac_kb, \
     user_verifikation_kb
 from modules.functions.work_with_geo import adres_from_adres, cords_to_address
-from modules.sql_func import update_db, read_by_name, join_profile_all
+from modules.sql_func import update_db, read_by_name, join_profile_all, update_city_db
 from modules.handlers.handlers_func import edit_text_call
 from modules.functions.simple_funcs import update_age_period
 
@@ -188,7 +188,7 @@ async def start_menu(call: types.CallbackQuery):
 @dp.message_handler(state=UserProfile.city)
 async def start_menu(message: types.Message):
     try:
-        city = adres_from_adres(message.text)
+        city, latitude, longitude = adres_from_adres(message.text)
         if city == 'Error':
             await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
             return
@@ -197,7 +197,7 @@ async def start_menu(message: types.Message):
                                  f'<b>{city}</b>\n'
                                  f'Если все правильно то подтвердите.', reply_markup=confirm(without_back=True),
                                  parse_mode='html')
-            update_db(table='fast_info', name='city', data=city, id_data=message.from_user.id)
+            update_city_db(data=city, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
     except:
         return
     await UserProfile.city.set()
@@ -212,11 +212,11 @@ async def fill_form(message: types.Message):
     if address == 'Error':
         await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
         return
-    address = adres_from_adres(address)
+    address, latitude, longitude = adres_from_adres(address)
     if address == 'Error':
         await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
         return
-    update_db(table='fast_info', name='city', data=address, id_data=message.from_user.id)
+    update_city_db(data=address, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
     await message.answer('Ваш город изменен!')
     # Send main profile text
     await send_main_text(message.from_user.id)

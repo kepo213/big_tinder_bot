@@ -7,7 +7,7 @@ from modules.functions.work_with_geo import adres_from_adres, cords_to_address
 from aiogram.dispatcher.filters import Text
 from modules.handlers.handlers_func import edit_text_call
 from modules.sql_func import insert_user, read_by_name, all_users_table, \
-    update_db, create_fast_info_table, sender_table, read_all
+    update_db, update_city_db, sender_table, read_all
 from modules.dispatcher import bot, Admin, User
 from modules.functions.simple_funcs import update_age_period
 from aiogram.dispatcher import FSMContext
@@ -90,11 +90,11 @@ async def fill_form(message: types.Message):
     if address == 'Error':
         await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
         return
-    address = adres_from_adres(address)
+    address, latitude, longitude = adres_from_adres(address)
     if address == 'Error':
         await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
         return
-    update_db(table='fast_info', name='city', data=address, id_data=message.from_user.id)
+    update_city_db(data=address, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
     await message.answer('📷 Пришлите <b>Ваше фото</b> или установите фото из профиля Telegram.\n'
                          'Если в вашем профиле нет фотографий или они скрыты настройками приватности, то '
                          'фотография не загрузится и лучше загрузите ваше фото в ручную.',
@@ -105,7 +105,7 @@ async def fill_form(message: types.Message):
 @dp.message_handler(state=User.set_geo)
 async def fill_form(message: types.Message):
     try:
-        city = adres_from_adres(message.text)
+        city, latitude, longitude = adres_from_adres(message.text)
         if city == 'Error':
             await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
             return
@@ -113,7 +113,7 @@ async def fill_form(message: types.Message):
             await message.answer(f'Я нашел такой адрес:\n'
                                  f'<b>{city}</b>\n'
                                  f'Если все правильно то подтвердите.', reply_markup=confirm(without_back=True), parse_mode='html')
-            update_db(table='fast_info', name='city', data=city, id_data=message.from_user.id)
+            update_city_db(data=city, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
             await User.set_geo.set()
     except:
         pass

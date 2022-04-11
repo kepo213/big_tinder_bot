@@ -52,6 +52,15 @@ def user_verifikation_kb(user_id: int):
     return start_kb
 
 
+def user_couples_kb(user_id: int):
+    yes = InlineKeyboardButton(text='❤️', callback_data=f'couple_yes_{user_id}')
+    present = InlineKeyboardButton(text='🎁', callback_data=f'couple_present_{user_id}')
+    no = InlineKeyboardButton(text='💔', callback_data=f'couple_no_{user_id}')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(yes, present, no)
+    return start_kb
+
+
 def compotibility_kb():
     ru_lang = InlineKeyboardButton(text='❤️‍🔥 Проверить совместимость',
                                    url='https://t.me/BeRelaxBot?start=compatibility_ru')

@@ -58,6 +58,8 @@ def create_fast_info_table():
              user_age BIGINT,
              user_sex TEXT,
              city TEXT,
+             longitude DOUBLE PRECISION,
+             latitude DOUBLE PRECISION,
              photo_id TEXT DEFAULT '0',
              photo_good TEXT DEFAULT '0',
              about_text TEXT DEFAULT '0',
@@ -73,6 +75,23 @@ def create_fast_info_table():
              fast_1 TEXT DEFAULT '0',
              fast_2 TEXT DEFAULT '0',
              fast_3 TEXT DEFAULT '0')''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Новый юзер создает таблицу в бд
+def for_couples_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS couples (
+             id SERIAL PRIMARY KEY,
+             tg_id BIGINT UNIQUE,
+             longitude TEXT,
+             latitude TEXT,
+             media_type TEXT,
+             status TEXT DEFAULT 'active')''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -162,7 +181,17 @@ def update_db(data, name: str, id_data, id_name: str = 'tg_id', table: str = 'al
         with data_base.cursor() as cursor:
             cursor.execute(f"UPDATE {table} SET {name}=(%s) WHERE {id_name}=(%s)", (data, id_data))
             data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
 
+
+# Обновляем данные в базе данных
+def update_city_db(data, latitude: str, longitude: str, id_data, id_name: str = 'tg_id'):
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"UPDATE fast_info SET city=(%s), latitude=(%s), longitude=(%s)  WHERE {id_name}=(%s)",
+                           (data, latitude, longitude, id_data))
+            data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
 

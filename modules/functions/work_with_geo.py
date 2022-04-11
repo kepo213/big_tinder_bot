@@ -35,8 +35,10 @@ def adres_from_adres(address: str):
             # Согласно описанию ответа, он находится по следующему пути:
             toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
             # Полный адрес топонима:
-            toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["text"]
-            return toponym_address
+            toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]['Country']['AdministrativeArea']['Locality']['LocalityName']
+            latitude = str(toponym['Point']['pos']).split(' ')[0]
+            longitude = str(toponym['Point']['pos']).split(' ')[1]
+            return toponym_address, latitude, longitude
         else:
             return 'Error'
     except:

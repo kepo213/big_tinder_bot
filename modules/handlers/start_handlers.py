@@ -3,10 +3,11 @@ from main import dp
 from aiogram.dispatcher.filters import Text
 import logging
 from modules.functions.simple_funcs import start_reffs
+from modules.handlers.handlers_func import edit_text_call
 from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table,\
     update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
-from modules.dispatcher import bot, Admin, User
+from modules.dispatcher import bot, Admin, User, AdminSettings
 from aiogram.dispatcher import FSMContext
 from modules.keyboards import start_user_kb, start_admin_kb, main_user_kb
 
@@ -44,6 +45,13 @@ async def start_menu(message: types.Message):
 async def start_menu(call: types.CallbackQuery):
     await call.message.answer('🔙Главное меню', reply_markup=main_user_kb())
     await User.start.set()
+
+
+# Start menu
+@dp.callback_query_handler(state=AdminSettings.start, text='back')
+async def start_menu(call: types.CallbackQuery):
+    await edit_text_call(text='Привет админ', k_board=start_admin_kb(), call=call)
+    await Admin.start.set()
 
 
 # Start menu

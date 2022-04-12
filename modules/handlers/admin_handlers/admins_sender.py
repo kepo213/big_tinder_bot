@@ -21,9 +21,9 @@ async def start_menu(message: types.Message):
     # проверяем есть ли запись
     sender_data = read_by_name(table='sender', id_data=message.from_user.id)
     if len(sender_data) == 0:
-        insert_in_db(table='sender', name='text', data=message.text, tg_id=message.from_user.id)
+        insert_in_db(table='constants', name='text', data=message.text, tg_id=message.from_user.id)
     else:
-        update_db(table='sender', name='text', data=message.text, id_data=message.from_user.id)
+        update_db(table='constants', name='text', data=message.text, id_data=message.from_user.id)
     await message.answer(text='Отправьте мне сюда фото, видео или документ',
                          reply_markup=without_media())
     await Admin_sender.new_media.set()
@@ -32,19 +32,19 @@ async def start_menu(message: types.Message):
 # Рассылка Получаем файл. Запрос на кнопки
 @dp.message_handler(state=Admin_sender.new_media, content_types=types.ContentType.ANY)
 async def start_menu(message: types.Message):
-    update_db(table='sender', name='media_type', data=message.content_type, id_data=message.from_user.id)
+    update_db(table='constants', name='media_type', data=message.content_type, id_data=message.from_user.id)
     if message.content_type == 'video':
-        update_db(table='sender', name='media_id', data=message.video.file_id, id_data=message.from_user.id)
+        update_db(table='constants', name='media_id', data=message.video.file_id, id_data=message.from_user.id)
     elif message.content_type == 'audio':
-        update_db(table='sender', name='media_id', data=message.audio.file_id, id_data=message.from_user.id)
+        update_db(table='constants', name='media_id', data=message.audio.file_id, id_data=message.from_user.id)
     elif message.content_type == 'document':
-        update_db(table='sender', name='media_id', data=message.document.file_id,
+        update_db(table='constants', name='media_id', data=message.document.file_id,
                   id_data=message.from_user.id)
     elif message.content_type == 'animation':
-        update_db(table='sender', name='media_id', data=message.animation.file_id,
+        update_db(table='constants', name='media_id', data=message.animation.file_id,
                   id_data=message.from_user.id)
     elif message.content_type == 'photo':
-        update_db(table='sender', name='media_id', data=message.photo[0].file_id,
+        update_db(table='constants', name='media_id', data=message.photo[0].file_id,
                   id_data=message.from_user.id)
     else:
         await message.answer('Ошибка типа данных, попробуйте другой файл')
@@ -61,7 +61,7 @@ async def start_menu(message: types.Message):
 # Рассылка. Пропускаем ввод медиа. Запрос на клавиатуру
 @dp.callback_query_handler(state=Admin_sender.new_media, text='no_data')
 async def start_menu(call: types.CallbackQuery):
-    update_db(table='sender', name='media_type', data='text', id_data=call.from_user.id)
+    update_db(table='constants', name='media_type', data='text', id_data=call.from_user.id)
     await edit_text_call(call=call, text=f'Отправьте мне сюда до трех кнопок в таком виде:\n'
                                          f'Текст кнопки\n'
                                          f'URL\n'
@@ -74,7 +74,7 @@ async def start_menu(call: types.CallbackQuery):
 # Рассылка. Сохраняем все. Отправляем тестовое сообщение. Переход по кнопке без кнопок
 @dp.callback_query_handler(state=Admin_sender.new_k_board, text='no_data')
 async def start_menu(call: types.CallbackQuery):
-    update_db(table='sender', name='k_board', data='0', id_data=call.from_user.id)
+    update_db(table='constants', name='k_board', data='0', id_data=call.from_user.id)
     send_data = read_by_name(table='sender', id_data=call.from_user.id)[0]
     type_msg = send_data[3]
     text_msg = send_data[2]
@@ -99,7 +99,7 @@ async def start_menu(call: types.CallbackQuery):
 # Рассылка. Сохраняем все. Отправляем тестовое сообщение. С кнопками Нет валидации
 @dp.message_handler(state=Admin_sender.new_k_board)
 async def start_menu(message: types.Message):
-    update_db(table='sender', name='k_board', data=message.text, id_data=message.from_user.id)
+    update_db(table='constants', name='k_board', data=message.text, id_data=message.from_user.id)
     if len(message.text.split('\n')) % 2 == 0:
         send_data = read_by_name(table='sender', id_data=message.from_user.id)[0]
         type_msg = send_data[3]
@@ -150,7 +150,7 @@ async def start_menu(call: types.CallbackQuery):
         all_users = read_by_name(name='tg_id', id_name='status', id_data='active')
 
     await call.message.answer('Начинаю рассылку')
-    send_data = read_by_name(table='sender', id_data=call.from_user.id)[0]
+    send_data = read_by_name(table='constants', id_data=call.from_user.id)[0]
     text_msg = send_data[2]
     type_msg = send_data[3]
     media_id = send_data[4]

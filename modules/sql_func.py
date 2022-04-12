@@ -88,7 +88,8 @@ def for_couples_table():
             cursor.execute(f'''CREATE TABLE IF NOT EXISTS couples (
              id SERIAL PRIMARY KEY,
              tg_id BIGINT UNIQUE,
-             lust_couple_id BIGINT DEFAULT 0)''')
+             lust_couple_id BIGINT DEFAULT 0,
+             adv BIGINT DEFAULT 0)''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -99,14 +100,20 @@ def sender_table():
     global data_base
     try:
         with data_base.cursor() as cursor:
-            cursor.execute(f'''CREATE TABLE IF NOT EXISTS sender (
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS constants (
              id SERIAL PRIMARY KEY,
              tg_id BIGINT UNIQUE,
              text TEXT DEFAULT '0',
              media_type TEXT DEFAULT '0',
              media_id TEXT DEFAULT '0',
-             k_board TEXT DEFAULT '0'
+             k_board TEXT DEFAULT '0',
+             adv_number BIGINT DEFAULT 6,
+             fake_post BIGINT DEFAULT 8
              )''')
+            data_base.commit()
+            cursor.execute(f"INSERT INTO constants (id) "
+                           f"VALUES (%s) "
+                           f"ON CONFLICT DO NOTHING;", (1,))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -255,16 +262,19 @@ def read_by_name(
 
 
 # Собираем все записи с фильтрацией по 1 параметру
-def search_geo(
+def search_person(
         x_left: float, x_right: float,
-        y_up: float, y_down: float, search_sex: str, lust_id):
+        y_up: float, y_down: float, search_sex: str, lust_id: int,
+        age_min: int, age_max: int):
     global data_base
     try:
         with data_base.cursor() as cursor:
-            cursor.execute(f"SELECT * FROM fast_info WHERE (longitude BETWEEN '{x_left}' AND '{x_right}') "
+            cursor.execute(f"SELECT id, tg_id, photo_id FROM fast_info WHERE (longitude BETWEEN '{x_left}' AND '{x_right}') "
                            f"AND (latitude BETWEEN '{y_down}' AND '{y_up}') "
+                           f"AND (user_age BETWEEN '{age_min}' AND '{age_max}') "
                            f"AND (id > {lust_id}) "
-                           f"AND (user_sex = '{search_sex}')")
+                           f"AND (user_sex = '{search_sex}') "
+                           f"AND (search_status = 1)")
             data = cursor.fetchall()
             return data
 

@@ -59,7 +59,7 @@ def settings_text(user_id: int):
     name = user_data[1]
     age = user_data[2]
     # Собираем текст
-    text = f'{emoji}{name}{premium}, {age}\n' \
+    text = f'{emoji}{name}{premium}, {age}\n\n' \
            f'{good}\n' \
            f'{insta}{zodiac}{city}{description}'
     return text, photo_id
@@ -87,6 +87,7 @@ async def start_menu(message: types.Message):
 
 
 # Profile menu
+@dp.callback_query_handler(state=UserProfile.emoji, text='close_it')
 @dp.callback_query_handler(state=UserProfile.verification, text='close_it')
 @dp.callback_query_handler(state=UserProfile.zodiac, text='close_it')
 @dp.callback_query_handler(state=UserProfile.about, text='close_it')

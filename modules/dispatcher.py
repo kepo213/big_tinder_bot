@@ -23,6 +23,11 @@ class Admin(StatesGroup):
     start = State()
 
 
+class AdminSettings(StatesGroup):
+    start = State()
+    adv_number = State()
+
+
 class Admin_sender(StatesGroup):
     new_text_post = State()
     new_media = State()

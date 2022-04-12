@@ -1,7 +1,6 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-
 send_contact = KeyboardButton(text=f'📞Поделится контактом', request_contact=True)
 send_contact_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(send_contact)
 
@@ -175,6 +174,21 @@ def start_admin_kb():
     return start_kb
 
 
+def admins_settings_kb():
+    admin_setings_adv_m = InlineKeyboardButton(text='📺🙎‍♂️ Реклама М', callback_data='admin_setings_adv_m')
+    admin_setings_adv_f = InlineKeyboardButton(text='📺🙍🏻‍♀️ Реклама Ж', callback_data='admin_setings_adv_f')
+    admin_setings_adv_number = InlineKeyboardButton(text='📺 Частота рекламы', callback_data='admin_setings_adv_number')
+    admin_setings_fake_number = InlineKeyboardButton(text='🌠Частота фэйковых анкет',
+                                                     callback_data='admin_setings_fake_number')
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb = InlineKeyboardMarkup().add(admin_setings_adv_m)
+    start_kb.add(admin_setings_adv_f)
+    start_kb.add(admin_setings_adv_number)
+    start_kb.add(admin_setings_fake_number)
+    start_kb.add(back)
+    return start_kb
+
+
 # отправка в рассылке без медиа
 def without_media():
     back = InlineKeyboardButton(text=f'Пропустить', callback_data=f'no_data')
@@ -191,7 +205,7 @@ def close_it():
 
 
 # клавиатура для админа стартовая
-def confirm(without_back=False, without_yes=False,):
+def confirm(without_back=False, without_yes=False, ):
     yes_all_good = InlineKeyboardButton(text=f'Да все хорошо!', callback_data=f'yes_all_good')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     user_main = InlineKeyboardMarkup()
@@ -244,4 +258,3 @@ def confirm_kb(index):
 
     category_kb.add(confirm, back)
     return category_kb
-

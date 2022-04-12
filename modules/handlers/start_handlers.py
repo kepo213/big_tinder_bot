@@ -3,7 +3,7 @@ from main import dp
 from aiogram.dispatcher.filters import Text
 import logging
 from modules.functions.simple_funcs import start_reffs
-from modules.sql_func import insert_user, read_by_name, all_users_table, \
+from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table,\
     update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User
@@ -51,6 +51,7 @@ async def start_menu(call: types.CallbackQuery):
 async def start_menu(message: types.Message):
     # Создаем все таблицы в бд
     create_fast_info_table()
+    for_couples_table()
     all_users_table()
     sender_table()
     photo_table()

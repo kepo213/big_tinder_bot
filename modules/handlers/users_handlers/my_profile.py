@@ -47,7 +47,7 @@ def settings_text(user_id: int):
     if str(user_data[3]) == "0":
         city = ''
     else:
-        city = f'🗺{str(user_data[3]).split(", ")[1]}\n'
+        city = f'🗺{user_data[3]}\n'
 
     if str(user_data[6]) == "0":
         description = ''
@@ -166,8 +166,10 @@ async def start_menu(call: types.CallbackQuery):
 async def start_menu(message: types.Message):
     if message.text.lower() == 'парень':
         update_db(table='fast_info', name='user_sex', data='men', id_data=message.from_user.id)
+        update_db(table='fast_info', name='search_sex', data='female', id_data=message.from_user.id)
     elif message.text.lower() == 'девушка':
         update_db(table='fast_info', name='user_sex', data='female', id_data=message.from_user.id)
+        update_db(table='fast_info', name='search_sex', data='men', id_data=message.from_user.id)
     else:
         await message.answer('Нажми на кнопку ниже!', reply_markup=user_sex_kb())
         return
@@ -188,13 +190,13 @@ async def start_menu(call: types.CallbackQuery):
 @dp.message_handler(state=UserProfile.city)
 async def start_menu(message: types.Message):
     try:
-        city, latitude, longitude = adres_from_adres(message.text)
-        if city == 'Error':
+        city, latitude, longitude, full_adress = adres_from_adres(message.text)
+        if city == 'Error' or city is None:
             await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
             return
         else:
             await message.answer(f'Я нашел такой адрес:\n'
-                                 f'<b>{city}</b>\n'
+                                 f'<b>{full_adress}</b>\n'
                                  f'Если все правильно то подтвердите.', reply_markup=confirm(without_back=True),
                                  parse_mode='html')
             update_city_db(data=city, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
@@ -212,7 +214,7 @@ async def fill_form(message: types.Message):
     if address == 'Error':
         await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
         return
-    address, latitude, longitude = adres_from_adres(address)
+    address, latitude, longitude, full_adress = adres_from_adres(address)
     if address == 'Error':
         await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
         return

@@ -5,7 +5,6 @@ from modules.setings import MainSettings
 
 constant = MainSettings()
 
-
 data_base = psycopg2.connect(
     host=constant.db_host(),
     user=constant.user_db(),
@@ -57,6 +56,7 @@ def create_fast_info_table():
              tg_id BIGINT UNIQUE,
              user_age BIGINT,
              user_sex TEXT,
+             search_sex TEXT,
              city TEXT,
              longitude DOUBLE PRECISION,
              latitude DOUBLE PRECISION,
@@ -88,10 +88,7 @@ def for_couples_table():
             cursor.execute(f'''CREATE TABLE IF NOT EXISTS couples (
              id SERIAL PRIMARY KEY,
              tg_id BIGINT UNIQUE,
-             longitude TEXT,
-             latitude TEXT,
-             media_type TEXT,
-             status TEXT DEFAULT 'active')''')
+             lust_couple_id BIGINT DEFAULT 0)''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -142,6 +139,10 @@ def insert_user(name: str, tg_id: str, table: str = 'all_users'):
                            f"ON CONFLICT DO NOTHING;", (tg_id, name, data_now, data_now))
             data_base.commit()
             cursor.execute(f"INSERT INTO fast_info (tg_id) "
+                           f"VALUES (%s) "
+                           f"ON CONFLICT DO NOTHING;", (tg_id,))
+            data_base.commit()
+            cursor.execute(f"INSERT INTO couples (tg_id) "
                            f"VALUES (%s) "
                            f"ON CONFLICT DO NOTHING;", (tg_id,))
             data_base.commit()
@@ -200,7 +201,7 @@ def update_city_db(data, latitude: str, longitude: str, id_data, id_name: str = 
 def grow_balls_db(data, id_name: str = 'tg_id'):
     try:
         with data_base.cursor() as cursor:
-            cursor.execute(f"UPDATE fast_info SET balls_balance = balls_balance + 50 WHERE {id_name}=(%s)", (data, ))
+            cursor.execute(f"UPDATE fast_info SET balls_balance = balls_balance + 50 WHERE {id_name}=(%s)", (data,))
             data_base.commit()
 
     except Exception as _ex:
@@ -246,6 +247,24 @@ def read_by_name(
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f"SELECT {name} FROM {table} WHERE {id_name}='{id_data}'")
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 1 параметру
+def search_geo(
+        x_left: float, x_right: float,
+        y_up: float, y_down: float, search_sex: str, lust_id):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT * FROM fast_info WHERE (longitude BETWEEN '{x_left}' AND '{x_right}') "
+                           f"AND (latitude BETWEEN '{y_down}' AND '{y_up}') "
+                           f"AND (id > {lust_id}) "
+                           f"AND (user_sex = '{search_sex}')")
             data = cursor.fetchall()
             return data
 

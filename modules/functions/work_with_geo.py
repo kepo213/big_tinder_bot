@@ -35,10 +35,44 @@ def adres_from_adres(address: str):
             # Согласно описанию ответа, он находится по следующему пути:
             toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
             # Полный адрес топонима:
-            toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]['Country']['AdministrativeArea']['Locality']['LocalityName']
+            status = False
+            try:
+                toponym_address = toponym["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]['Country']['AdministrativeArea']['Locality']['LocalityName']
+                full_address = \
+                toponym["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]['Country']['AddressLine']
+                status = True
+            except:
+                pass
+            if not status:
+                try:
+                    toponym_address = \
+                    toponym["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]['Country']['AdministrativeArea']['SubAdministrativeArea'][
+                        'Locality']['LocalityName']
+                    full_address = \
+                        toponym["metaDataProperty"]["GeocoderMetaData"]["AddressDetails"]['Country']['AddressLine']
+                    status = True
+                except:
+                    pass
+            if not status:
+                try:
+                    toponym_address = \
+                        toponym["name"]
+                    full_address = f'{toponym_address}, {toponym["description"]}'
+                    status = True
+                except:
+                    pass
+
+            if not status:
+                try:
+                    toponym_address = \
+                        toponym["name"]
+                    full_address = toponym_address
+                    status = True
+                except:
+                    return 'Error'
             latitude = str(toponym['Point']['pos']).split(' ')[0]
             longitude = str(toponym['Point']['pos']).split(' ')[1]
-            return toponym_address, latitude, longitude
+            return toponym_address, latitude, longitude, full_address
         else:
             return 'Error'
     except:

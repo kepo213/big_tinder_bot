@@ -1,3 +1,5 @@
+
+from modules.sql_func import join_likes
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -43,6 +45,41 @@ def start_user_kb():
     return start_kb
 
 
+def user_likes_kb():
+    user_likes = InlineKeyboardButton(text='👍 Вы понравились', callback_data='user_likes')
+    user_presents_send = InlineKeyboardButton(text='🎁 Кому отправил', callback_data='user_presents_send')
+    user_presents_from = InlineKeyboardButton(text='🎁 От кого получил', callback_data='user_presents_from')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(user_likes)
+    start_kb.add(user_presents_send)
+    start_kb.add(user_presents_from)
+    return start_kb
+
+
+def likes_kb(users: tuple):
+    start_kb = InlineKeyboardMarkup()
+    for user in users:
+        user_data = join_likes(int(user[0]))[0]
+
+        btn_text = f"{user_data[1]}, {user_data[2]}, {user_data[3]}"
+        user_likes = InlineKeyboardButton(text=btn_text, callback_data=f'like_kb_{user_data[0]}')
+        start_kb.add(user_likes)
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb.add(back)
+    return start_kb
+
+
+def likes_in_profile_kb():
+    start_kb = InlineKeyboardMarkup()
+    left = InlineKeyboardButton(text=f'◀️', callback_data=f'like_kb_left')
+    right = InlineKeyboardButton(text=f'▶️', callback_data=f'like_kb_right')
+
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb.add(left, right)
+    start_kb.add(back)
+    return start_kb
+
+
 def user_verifikation_kb(user_id: int):
     verifikation = InlineKeyboardButton(text='Подтвердить', callback_data=f'verifikation_{user_id}')
     verifikation_close = InlineKeyboardButton(text='Отклонить', callback_data=f'verifikation_close_{user_id}')
@@ -51,9 +88,9 @@ def user_verifikation_kb(user_id: int):
     return start_kb
 
 
-def user_couples_kb(user_id: int):
+def user_couples_kb(user_id: int, presents: int):
     yes = InlineKeyboardButton(text='💚 Like', callback_data=f'couple_yes_{user_id}')
-    present = InlineKeyboardButton(text='🎁', callback_data=f'couple_present_{user_id}')
+    present = InlineKeyboardButton(text=f'🎁({presents})', callback_data=f'couple_present_{user_id}')
     no = InlineKeyboardButton(text='💔 Skip', callback_data=f'couple_no_{user_id}')
     start_kb = InlineKeyboardMarkup()
     start_kb.add(yes, present, no)

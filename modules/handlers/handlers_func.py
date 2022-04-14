@@ -6,4 +6,5 @@ async def edit_text_call(call: types.CallbackQuery, text: str, k_board=None):
     try:
         await call.message.edit_text(text=text, reply_markup=k_board, parse_mode='html')
     except Exception as _ex:
+        await call.message.delete()
         await call.message.answer(text=text, reply_markup=k_board, parse_mode='html')

@@ -1,4 +1,4 @@
-import math
+
 from aiogram import types
 from main import dp
 from modules.dispatcher import constant
@@ -51,7 +51,6 @@ def create_text(user_id: int, premium_finder: str, show_user_link: bool = True):
         description = ''
     else:
         description = f'📝{user_data[6]}\n'
-    print(user_data[0])
     if show_user_link:
         name = f'<a href="tg://user?id={user_data[0]}">{user_data[1]}</a>'
     else:
@@ -133,13 +132,13 @@ async def show_adv(user_sex: str, user_id: int):
 @dp.message_handler(commands=['love'], state='*')
 @dp.message_handler(Text(equals='👩‍❤️‍👨 Найти пару', ignore_case=True), state='*')
 async def start_menu(message: types.Message):
-    user_sex = read_by_name(name='user_sex', id_data=message.from_user.id, table='fast_info')[0][0]
+    user_data = read_by_name(name='user_sex, balls_balance', id_data=message.from_user.id, table='fast_info')[0]
     couple_data = read_by_name(name='adv', id_data=message.from_user.id, table='couples')[0][0]
     serch_settings = read_by_name(name='adv_number', id_data=1, id_name='id', table='constants')[0][0]
 
     # Check when show adv
     if int(couple_data) >= int(serch_settings):
-        status = await show_adv(user_sex=user_sex, user_id=message.from_user.id)
+        status = await show_adv(user_sex=user_data[0], user_id=message.from_user.id)
         update_db(table='couples', name='adv', data=0, id_data=message.from_user.id)
         if status:
             await UserCouples.start.set()
@@ -152,6 +151,7 @@ async def start_menu(message: types.Message):
         await message.answer('🤷‍♂️ Мы никого не нашли, увеличьте расстояние - /settings')
         await UserCouples.start.set()
         return
-    await message.answer_photo(caption=text, photo=photo_id, reply_markup=user_couples_kb(user_id=finded_user_id),
+    await message.answer_photo(caption=text, photo=photo_id,
+                               reply_markup=user_couples_kb(user_id=finded_user_id, presents=int(user_data[1])//100),
                                parse_mode='html')
     await UserCouples.start.set()

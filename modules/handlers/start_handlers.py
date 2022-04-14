@@ -4,8 +4,8 @@ from aiogram.dispatcher.filters import Text
 import logging
 from modules.functions.simple_funcs import start_reffs
 from modules.handlers.handlers_func import edit_text_call
-from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table, likes_table, adv_table,\
-    update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table
+from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table, likes_table, adv_table, \
+    update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table, presents_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User, AdminSettings
 from aiogram.dispatcher import FSMContext
@@ -18,7 +18,8 @@ async def start_menu(message: types.Message):
     # Обновляем данные пользователя в базе данных
     user_data = read_by_name(id_data=message.from_user.id)
     if str(user_data) == '[]' and not message.text.startswith('/start reff'):
-        insert_user(tg_id=message.from_user.id, name=message.from_user.first_name)
+        insert_user(tg_id=message.from_user.id, name=message.from_user.first_name,
+                    user_nickname=message.from_user.username)
         await message.answer(text='🇷🇺 Выберите язык:\n'
                                   '🇺🇸 Select a language:', reply_markup=start_user_kb())
     elif str(user_data) == '[]' and message.text.startswith('/start reff'):
@@ -32,7 +33,8 @@ async def start_menu(message: types.Message):
         await message.answer('🔙Главное меню', reply_markup=main_user_kb())
         update_db(table="all_users", name="status", data="active", id_data=message.from_user.id)
     elif user_data[0][3] == 'need_reg':
-        insert_user(tg_id=message.from_user.id, name=message.from_user.first_name)
+        insert_user(tg_id=message.from_user.id, name=message.from_user.first_name,
+                    user_nickname=message.from_user.username)
         await message.answer(text='Ваша регистрация не была завершена! Заполните ее заново!')
         await message.answer(text='🇷🇺 Выберите язык:\n'
                                   '🇺🇸 Select a language:', reply_markup=start_user_kb())
@@ -65,6 +67,7 @@ async def start_menu(message: types.Message):
     sender_table()
     likes_table()
     adv_table()
+    presents_table()
     photo_table()
     reffs_table()
     await message.answer(text='Я создал все таблицы')

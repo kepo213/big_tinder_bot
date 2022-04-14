@@ -83,3 +83,10 @@ class UserPremium(StatesGroup):
 
 class UserCouples(StatesGroup):
     start = State()
+
+
+class UserLikes(StatesGroup):
+    start = State()
+    likes_for_me = State()
+    presents_for_me = State()
+    presents_from_me = State()

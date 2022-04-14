@@ -4,13 +4,10 @@ from aiogram import types
 from main import dp
 from modules.functions.check_photo import search_face
 from modules.functions.work_with_geo import adres_from_adres, cords_to_address
-from aiogram.dispatcher.filters import Text
 from modules.handlers.handlers_func import edit_text_call
-from modules.sql_func import insert_user, read_by_name, all_users_table, \
-    update_db, update_city_db, sender_table, read_all
-from modules.dispatcher import bot, Admin, User
+from modules.sql_func import update_db, update_city_db
+from modules.dispatcher import bot, User
 from modules.functions.simple_funcs import update_age_period
-from aiogram.dispatcher import FSMContext
 from modules.keyboards import user_sex_kb, get_geo, get_photo, confirm, main_user_kb
 
 

@@ -44,8 +44,18 @@ async def start_reffs(message: types.Message):
         else:
             pass
         update_db(table="all_users", name="status", data="active", id_data=message.from_user.id)
-        insert_user(tg_id=message.from_user.id, name=message.from_user.first_name)
+        insert_user(tg_id=message.from_user.id, name=message.from_user.first_name,
+                    user_nickname=message.from_user.username)
         await message.answer(text='🇷🇺 Выберите язык:\n'
                                   '🇺🇸 Select a language:', reply_markup=start_user_kb())
     except:
         pass
+
+
+async def check_balls(call: types.CallbackQuery):
+    my_balls = int(read_by_name(table='fast_info', name='balls_balance', id_data=call.from_user.id)[0][0])
+    if my_balls >= 100:
+        update_db(table="fast_info", name="balls_balance", data=my_balls-100, id_data=call.from_user.id)
+        return True
+    else:
+        return False

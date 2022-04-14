@@ -54,6 +54,7 @@ def create_fast_info_table():
             cursor.execute(f'''CREATE TABLE IF NOT EXISTS fast_info (
              id SERIAL PRIMARY KEY,
              tg_id BIGINT UNIQUE,
+             user_nickname TEXT DEFAULT '0',
              user_age BIGINT,
              user_sex TEXT,
              search_sex TEXT,
@@ -107,6 +108,21 @@ def likes_table():
              from_tg_id BIGINT DEFAULT 0,
              status TEXT DEFAULT 'active',
              present INTEGER DEFAULT 0)''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Новый юзер создает таблицу в бд
+def presents_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS presents (
+             id SERIAL PRIMARY KEY,
+             tg_id BIGINT,
+             from_tg_id BIGINT DEFAULT 0,
+             status TEXT DEFAULT 'active')''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -178,7 +194,7 @@ def adv_table():
 
 
 # Добавляем данные новому пользователю
-def insert_user(name: str, tg_id: str, table: str = 'all_users'):
+def insert_user(name: str, tg_id: str, user_nickname: str, table: str = 'all_users'):
     global data_base
     data_now = datetime.datetime.now()
     try:
@@ -187,9 +203,9 @@ def insert_user(name: str, tg_id: str, table: str = 'all_users'):
                            f"VALUES (%s, %s, %s, %s) "
                            f"ON CONFLICT DO NOTHING;", (tg_id, name, data_now, data_now))
             data_base.commit()
-            cursor.execute(f"INSERT INTO fast_info (tg_id) "
-                           f"VALUES (%s) "
-                           f"ON CONFLICT DO NOTHING;", (tg_id,))
+            cursor.execute(f"INSERT INTO fast_info (tg_id, user_nickname) "
+                           f"VALUES (%s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (tg_id, user_nickname))
             data_base.commit()
             cursor.execute(f"INSERT INTO couples (tg_id) "
                            f"VALUES (%s) "
@@ -226,11 +242,11 @@ def insert_in_db(name: str, tg_id: str, data: str, table: str = 'all_users'):
 
 
 # Добавляем лайк
-def insert_likes_db(tg_id: int, from_tg_id: int):
+def insert_likes_presents_db(tg_id: int, from_tg_id: int, table: str = 'likes'):
     global data_base
     try:
         with data_base.cursor() as cursor:
-            cursor.execute(f"INSERT INTO likes (tg_id, from_tg_id) VALUES (%s, %s) "
+            cursor.execute(f"INSERT INTO {table} (tg_id, from_tg_id) VALUES (%s, %s) "
                            f"ON CONFLICT DO NOTHING;", (tg_id, from_tg_id))
             data_base.commit()
     except Exception as _ex:
@@ -378,6 +394,21 @@ def read_all_2(
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f"SELECT {name} FROM {table} WHERE {id_name}=(%s) AND {id_name2}=(%s)", (id_data, id_data2))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 3 параметрам
+def join_likes(tg_id: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, all_users.user_name, fast_info.user_age, fast_info.city "
+                           f"FROM all_users JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE "
+                           f"all_users.tg_id = (%s)", (tg_id,))
             data = cursor.fetchall()
             return data
 

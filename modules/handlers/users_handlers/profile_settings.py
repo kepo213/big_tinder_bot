@@ -60,7 +60,8 @@ async def fill_form(call: types.CallbackQuery):
     await UserSettings.language.set()
 
 
-@dp.callback_query_handler(state=UserSettings.language)
+@dp.callback_query_handler(state=UserSettings.language, text='en_lang')
+@dp.callback_query_handler(state=UserSettings.language, text='ru_lang')
 async def fill_form(call: types.CallbackQuery):
     call_text = call.data
     if call_text == 'ru_lang':

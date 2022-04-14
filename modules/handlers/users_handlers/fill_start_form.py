@@ -14,7 +14,8 @@ from aiogram.dispatcher import FSMContext
 from modules.keyboards import user_sex_kb, get_geo, get_photo, confirm, main_user_kb
 
 
-@dp.callback_query_handler(state=User.start)
+@dp.callback_query_handler(state=User.start, text='ru_lang')
+@dp.callback_query_handler(state=User.start, text='en_lang')
 async def fill_form(call: types.CallbackQuery):
     call_text = call.data
     if call_text == 'ru_lang':

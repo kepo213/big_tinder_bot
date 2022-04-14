@@ -352,7 +352,7 @@ async def start_menu(call: types.CallbackQuery):
 
 
 # Profile ZODIAC menu
-@dp.callback_query_handler(state=UserProfile.zodiac)
+@dp.callback_query_handler(state=UserProfile.zodiac, text_contains='zodiac_')
 async def start_menu(call: types.CallbackQuery):
     if call.data == 'zodiac_aries':
         zodiac = '♈️ Овен'

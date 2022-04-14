@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters import Text
 import logging
 from modules.functions.simple_funcs import start_reffs
 from modules.handlers.handlers_func import edit_text_call
-from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table,\
+from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table, likes_table, adv_table,\
     update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User, AdminSettings
@@ -24,7 +24,8 @@ async def start_menu(message: types.Message):
     elif str(user_data) == '[]' and message.text.startswith('/start reff'):
         await start_reffs(message)
     elif user_data[0][3] == 'admin':
-        await message.answer('Привет админ', reply_markup=start_admin_kb())
+        await message.answer('Привет админ', reply_markup=types.ReplyKeyboardRemove())
+        await message.answer('Чем помочь?', reply_markup=start_admin_kb())
         await Admin.start.set()
         return
     elif user_data[0][3] == 'close':
@@ -62,9 +63,11 @@ async def start_menu(message: types.Message):
     for_couples_table()
     all_users_table()
     sender_table()
+    likes_table()
+    adv_table()
     photo_table()
     reffs_table()
-    await message.answer(text='Я создал все базы данных')
+    await message.answer(text='Я создал все таблицы')
 
 
 # Start menu

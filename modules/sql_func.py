@@ -74,7 +74,8 @@ def create_fast_info_table():
              balls_balance BIGINT DEFAULT 100,
              fast_1 TEXT DEFAULT '0',
              fast_2 TEXT DEFAULT '0',
-             fast_3 TEXT DEFAULT '0')''')
+             fast_3 TEXT DEFAULT '0',
+             fast_4 TEXT DEFAULT '0')''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -90,6 +91,22 @@ def for_couples_table():
              tg_id BIGINT UNIQUE,
              lust_couple_id BIGINT DEFAULT 0,
              adv BIGINT DEFAULT 0)''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Новый юзер создает таблицу в бд
+def likes_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS likes (
+             id SERIAL PRIMARY KEY,
+             tg_id BIGINT,
+             from_tg_id BIGINT DEFAULT 0,
+             status TEXT DEFAULT 'active',
+             present INTEGER DEFAULT 0)''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -130,6 +147,31 @@ def reffs_table():
              mentor_tg_id BIGINT DEFAULT '0',
              date timestamp
              )''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Админ создает таблицу для рассылки
+def adv_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS adv (
+             id SERIAL PRIMARY KEY,
+             users_sex TEXT DEFAULT '0',
+             text TEXT DEFAULT '0',
+             photo_id TEXT DEFAULT '0',
+             btn_url TEXT DEFAULT '0'
+             )''')
+            data_base.commit()
+            cursor.execute(f"INSERT INTO adv (id, users_sex) "
+                           f"VALUES (%s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (1, 'men'))
+            data_base.commit()
+            cursor.execute(f"INSERT INTO adv (id, users_sex) "
+                           f"VALUES (%s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (2, 'female'))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -183,6 +225,18 @@ def insert_in_db(name: str, tg_id: str, data: str, table: str = 'all_users'):
         print('[INFO] Error while working with db', _ex)
 
 
+# Добавляем лайк
+def insert_likes_db(tg_id: int, from_tg_id: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"INSERT INTO likes (tg_id, from_tg_id) VALUES (%s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (tg_id, from_tg_id))
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
 # Обновляем данные в базе данных
 def update_db(data, name: str, id_data, id_name: str = 'tg_id', table: str = 'all_users'):
     try:
@@ -199,6 +253,17 @@ def update_city_db(data, latitude: str, longitude: str, id_data, id_name: str = 
         with data_base.cursor() as cursor:
             cursor.execute(f"UPDATE fast_info SET city=(%s), latitude=(%s), longitude=(%s)  WHERE {id_name}=(%s)",
                            (data, latitude, longitude, id_data))
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Обновляем данные в базе данных
+def update_adv_db(text: str, photo_id: str, btn_url: str, id_data: int):
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"UPDATE adv SET text=(%s), photo_id=(%s), btn_url=(%s)  WHERE id=(%s)",
+                           (text, photo_id, btn_url, id_data))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -269,7 +334,8 @@ def search_person(
     global data_base
     try:
         with data_base.cursor() as cursor:
-            cursor.execute(f"SELECT id, tg_id, photo_id FROM fast_info WHERE (longitude BETWEEN '{x_left}' AND '{x_right}') "
+            cursor.execute(f"SELECT id, tg_id, photo_id FROM fast_info WHERE "
+                           f"(longitude BETWEEN '{x_left}' AND '{x_right}') "
                            f"AND (latitude BETWEEN '{y_down}' AND '{y_up}') "
                            f"AND (user_age BETWEEN '{age_min}' AND '{age_max}') "
                            f"AND (id > {lust_id}) "

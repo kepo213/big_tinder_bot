@@ -9,7 +9,6 @@ import logging
 constant = MainSettings()
 telegram_token = constant.tg_token()
 
-
 storage = MemoryStorage()
 logging.basicConfig(level=logging.INFO)
 bot = Bot(telegram_token)
@@ -26,9 +25,15 @@ class Admin(StatesGroup):
 class AdminSettings(StatesGroup):
     start = State()
     adv_number = State()
+    fake_post_number = State()
+
+    adv_text = State()
+    adv_url = State()
+    adv_photo = State()
+    adv_confirm = State()
 
 
-class Admin_sender(StatesGroup):
+class AdminSender(StatesGroup):
     new_text_post = State()
     new_media = State()
     new_k_board = State()
@@ -71,5 +76,10 @@ class UserProfile(StatesGroup):
     Instagram = State()
     verification = State()
 
+
 class UserPremium(StatesGroup):
+    start = State()
+
+
+class UserCouples(StatesGroup):
     start = State()

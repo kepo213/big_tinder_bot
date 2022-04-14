@@ -4,15 +4,15 @@ from main import dp
 from modules.dispatcher import constant
 from aiogram.dispatcher.filters import Text
 
-from modules.dispatcher import bot, UserProfile
+from modules.dispatcher import bot, UserProfile, UserCouples
 from modules.functions.check_photo import search_face
-from modules.keyboards import user_couples_kb
+from modules.keyboards import user_couples_kb, user_couples_adv_kb
 from modules.sql_func import update_db, read_by_name, search_person, join_profile_all
 from modules.handlers.handlers_func import edit_text_call
 from modules.functions.simple_funcs import update_age_period
 
 
-def create_text(user_id: int, premium_finder: str):
+def create_text(user_id: int, premium_finder: str, show_user_link: bool = True):
     user_data = join_profile_all(id_data=user_id)[0]
 
     if str(user_data[7]) == "0":
@@ -51,8 +51,11 @@ def create_text(user_id: int, premium_finder: str):
         description = ''
     else:
         description = f'📝{user_data[6]}\n'
-
-    name = user_data[1]
+    print(user_data[0])
+    if show_user_link:
+        name = f'<a href="tg://user?id={user_data[0]}">{user_data[1]}</a>'
+    else:
+        name = user_data[1]
     age = user_data[2]
     # Собираем текст
     text = f'{emoji}{name}, {age} {premium}\n\n' \
@@ -92,28 +95,63 @@ def find_person(user_id: int):
     return finded_user_id, text, photo_id
 
 
+# Show profile when double like
+def show_other_profile(user_id: int, user_finder_id: int):
+    premium_finder = read_by_name(name='premium',
+                                  id_data=user_finder_id, table='fast_info')[0][0]
+    finded_user = read_by_name(name='id, tg_id, photo_id',
+                               id_data=user_id, table='fast_info')
+
+    photo_id = finded_user[0][2]
+
+    text = create_text(user_id, premium_finder=premium_finder, show_user_link=True)
+    return text, photo_id
+
+
+async def show_adv(user_sex: str, user_id: int):
+    if str(user_sex) == 'men':
+        fast_data = read_by_name(table='adv', name='users_sex, text, photo_id, btn_url', id_name='id',
+                                 id_data=1)[0]
+        if str(fast_data[2]) == '0':
+            return False
+        else:
+            await bot.send_photo(caption=fast_data[1], photo=fast_data[2], parse_mode='html',
+                                 reply_markup=user_couples_adv_kb(fast_data[3]), chat_id=user_id)
+            return True
+    else:
+        fast_data = read_by_name(table='adv', name='users_sex, text, photo_id, btn_url', id_name='id',
+                                 id_data=2)[0]
+        if str(fast_data[2]) == '0':
+            return False
+        else:
+            await bot.send_photo(caption=fast_data[1], photo=fast_data[2], parse_mode='html',
+                                 reply_markup=user_couples_adv_kb(fast_data[3]), chat_id=user_id)
+            return True
+
+
 # Profile menu
 @dp.message_handler(commands=['love'], state='*')
 @dp.message_handler(Text(equals='👩‍❤️‍👨 Найти пару', ignore_case=True), state='*')
 async def start_menu(message: types.Message):
+    user_sex = read_by_name(name='user_sex', id_data=message.from_user.id, table='fast_info')[0][0]
     couple_data = read_by_name(name='adv', id_data=message.from_user.id, table='couples')[0][0]
     serch_settings = read_by_name(name='adv_number', id_data=1, id_name='id', table='constants')[0][0]
+
     # Check when show adv
     if int(couple_data) >= int(serch_settings):
-        await message.answer('Рекламный пост')
+        status = await show_adv(user_sex=user_sex, user_id=message.from_user.id)
         update_db(table='couples', name='adv', data=0, id_data=message.from_user.id)
-        return
-    update_db(table='couples', name='adv', data=int(couple_data)+1, id_data=message.from_user.id)
+        if status:
+            await UserCouples.start.set()
+            return
+    else:
+        update_db(table='couples', name='adv', data=int(couple_data) + 1, id_data=message.from_user.id)
+
     finded_user_id, text, photo_id = find_person(message.from_user.id)
     if not finded_user_id:
         await message.answer('🤷‍♂️ Мы никого не нашли, увеличьте расстояние - /settings')
+        await UserCouples.start.set()
         return
-    await message.answer_photo(caption=text, photo=photo_id, reply_markup=user_couples_kb(user_id=message.from_user.id),
+    await message.answer_photo(caption=text, photo=photo_id, reply_markup=user_couples_kb(user_id=finded_user_id),
                                parse_mode='html')
-
-
-# Profile menu
-@dp.callback_query_handler(state=UserProfile.name, text='close_it')
-async def start_menu(call: types.CallbackQuery):
-    # Send main profile text
-    pass
+    await UserCouples.start.set()

@@ -52,11 +52,27 @@ def user_verifikation_kb(user_id: int):
 
 
 def user_couples_kb(user_id: int):
-    yes = InlineKeyboardButton(text='❤️', callback_data=f'couple_yes_{user_id}')
+    yes = InlineKeyboardButton(text='💚 Like', callback_data=f'couple_yes_{user_id}')
     present = InlineKeyboardButton(text='🎁', callback_data=f'couple_present_{user_id}')
-    no = InlineKeyboardButton(text='💔', callback_data=f'couple_no_{user_id}')
+    no = InlineKeyboardButton(text='💔 Skip', callback_data=f'couple_no_{user_id}')
     start_kb = InlineKeyboardMarkup()
     start_kb.add(yes, present, no)
+    return start_kb
+
+
+def user_couples_adv_kb(url: str):
+    yes = InlineKeyboardButton(text='💚 Like', url=url)
+    no = InlineKeyboardButton(text='💔 Skip', callback_data=f'couple_no_adv')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(yes, no)
+    return start_kb
+
+
+def user_like_like_adv_kb(user_id: int):
+    yes = InlineKeyboardButton(text='👍 покажи', callback_data=f'couple_double_yes_{user_id}')
+    no = InlineKeyboardButton(text='👎 пропустить', callback_data=f'couple_double_no')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(yes, no)
     return start_kb
 
 
@@ -179,7 +195,7 @@ def admins_settings_kb():
     admin_setings_adv_f = InlineKeyboardButton(text='📺🙍🏻‍♀️ Реклама Ж', callback_data='admin_setings_adv_f')
     admin_setings_adv_number = InlineKeyboardButton(text='📺 Частота рекламы', callback_data='admin_setings_adv_number')
     admin_setings_fake_number = InlineKeyboardButton(text='🌠Частота фэйковых анкет',
-                                                     callback_data='admin_setings_fake_number')
+                                                     callback_data='admin_settings_fake_number')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     start_kb = InlineKeyboardMarkup().add(admin_setings_adv_m)
     start_kb.add(admin_setings_adv_f)

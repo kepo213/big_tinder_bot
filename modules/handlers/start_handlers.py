@@ -5,7 +5,7 @@ import logging
 from modules.functions.simple_funcs import start_reffs
 from modules.handlers.handlers_func import edit_text_call
 from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table, likes_table, adv_table, \
-    update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table, presents_table
+    update_db, create_fast_info_table, sender_table, read_all, photo_table, reffs_table, presents_table, chat_roll_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User, AdminSettings
 from aiogram.dispatcher import FSMContext
@@ -13,6 +13,7 @@ from modules.keyboards import start_user_kb, start_admin_kb, main_user_kb
 
 
 # Start menu
+@dp.message_handler(Text(equals='🔙Главное меню', ignore_case=True), state='*')
 @dp.message_handler(commands=['start'], state='*')
 async def start_menu(message: types.Message):
     # Обновляем данные пользователя в базе данных
@@ -67,6 +68,7 @@ async def start_menu(message: types.Message):
     sender_table()
     likes_table()
     adv_table()
+    chat_roll_table()
     presents_table()
     photo_table()
     reffs_table()
@@ -122,6 +124,18 @@ async def start_menu(message: types.Message):
     await message.answer(f'Успешно {number}, ошибок {bad}\n\nЗагружаю')
     with open("all_users.xlsx", 'rb') as file:
         await bot.send_document(chat_id=message.from_user.id, document=file, caption="Все сделано!")
+
+
+# Get users
+@dp.message_handler(active=True, state='*')
+async def start_menu(message: types.Message):
+    pass
+
+
+# Get users
+@dp.callback_query_handler(active_call=True, state='*')
+async def start_menu(call: types.CallbackQuery):
+    pass
 
 
 # # Start menu

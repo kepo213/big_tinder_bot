@@ -1,6 +1,6 @@
 from aiogram import Bot, Dispatcher
 from modules.setings import MainSettings
-from modules.filters import NotAllProfile
+from modules.filters import NotAllProfile, CheckActivity, CheckActivityCall, InChatRoll, PremiumInChatRoll
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
@@ -16,6 +16,10 @@ dp = Dispatcher(bot, storage=storage)
 
 # Включаем фильтры
 dp.filters_factory.bind(NotAllProfile)
+dp.filters_factory.bind(CheckActivity)
+dp.filters_factory.bind(CheckActivityCall)
+dp.filters_factory.bind(InChatRoll)
+dp.filters_factory.bind(PremiumInChatRoll)
 
 
 class Admin(StatesGroup):
@@ -90,3 +94,8 @@ class UserLikes(StatesGroup):
     likes_for_me = State()
     presents_for_me = State()
     presents_from_me = State()
+
+
+class UserChatRoll(StatesGroup):
+    start = State()
+    talk = State()

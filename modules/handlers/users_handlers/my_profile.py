@@ -250,10 +250,10 @@ async def fill_form(message: types.Message):
         file_name = f"{str(message.from_user.id)}.jpg"
         await message.photo[-1].download(destination_file=f'modules/functions/{file_name}')
         faces_number = search_face(file_name=file_name)
-        if faces_number == 1:
+        if faces_number > 0:
             update_db(name='status', data='active', id_data=message.from_user.id)
             update_db(table='fast_info', name='photo_id', data=message.photo[-1].file_id, id_data=message.from_user.id)
-            await message.answer('Ваша фотография добавлена!')
+            await message.answer('Ваша фотография добавлена!', reply_markup=types.ReplyKeyboardRemove())
             # Send main profile text
             await send_main_text(message.from_user.id)
         else:
@@ -274,15 +274,15 @@ async def fill_form(message: types.Message):
         file_name = f"{str(message.from_user.id)}.jpg"
         photo = await message.from_user.get_profile_photos()
         if str(photo.photos) == '[]':
-            faces_number = 1000
+            faces_number = 0
         else:
             await photo.photos[0][-1].download(destination_file=f'modules/functions/{file_name}')
             faces_number = search_face(file_name=file_name)
-        if faces_number == 1:
+        if faces_number > 0:
             update_db(name='status', data='active', id_data=message.from_user.id)
             update_db(table='fast_info', name='photo_id', data=photo.photos[0][-1].file_id,
                       id_data=message.from_user.id)
-            await message.answer('Ваша фотография добавлена!')
+            await message.answer('Ваша фотография добавлена!', reply_markup=types.ReplyKeyboardRemove())
             # Send main profile text
             await send_main_text(message.from_user.id)
         else:
@@ -294,7 +294,7 @@ async def fill_form(message: types.Message):
             return
         os.remove(f'modules/functions/{file_name}')
     elif message.text == 'Отмена':
-        await message.answer('Отменено')
+        await message.answer('Отменено', reply_markup=types.ReplyKeyboardRemove())
         await send_main_text(message.from_user.id)
     else:
         await message.answer('Я жду от тебя фото.')

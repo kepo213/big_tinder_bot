@@ -13,6 +13,22 @@ def get_geo():
     return send_geo_kb
 
 
+def chat_roll_start():
+    start_roll = KeyboardButton(text=f'❌ Остановить!')
+    my_stat = KeyboardButton(text=f'👤 Показать свой профиль')
+    send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(start_roll, my_stat)
+    return send_geo_kb
+
+
+def chat_roll():
+    start_roll = KeyboardButton(text=f'💬 Запустить чат рулетку')
+    my_stat = KeyboardButton(text=f'📈 Моя статистика')
+    score = KeyboardButton(text=f'🏆 Рейтинг')
+    main_menu = KeyboardButton(text=f'🔙Главное меню')
+    send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(start_roll, my_stat)
+    return send_geo_kb.add(score, main_menu)
+
+
 def get_photo(close_it: bool = False):
     send_contact = KeyboardButton(text=f'Взять из профиля')
     send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -56,6 +72,15 @@ def user_likes_kb():
     return start_kb
 
 
+def chat_likes_kb(tg_id: int):
+    user_likes = InlineKeyboardButton(text='👍', callback_data=f'markchat_good_{tg_id}')
+    user_presents_send = InlineKeyboardButton(text='🎁', callback_data=f'markchat_present_{tg_id}')
+    user_presents_from = InlineKeyboardButton(text='👎', callback_data=f'markchat_bad_{tg_id}')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(user_likes, user_presents_send, user_presents_from)
+    return start_kb
+
+
 def likes_kb(users: tuple):
     start_kb = InlineKeyboardMarkup()
     for user in users:
@@ -69,13 +94,23 @@ def likes_kb(users: tuple):
     return start_kb
 
 
-def likes_in_profile_kb():
+def likes_in_profile_kb(left: bool = False, right: bool = False):
     start_kb = InlineKeyboardMarkup()
-    left = InlineKeyboardButton(text=f'◀️', callback_data=f'like_kb_left')
-    right = InlineKeyboardButton(text=f'▶️', callback_data=f'like_kb_right')
+    if left:
+        left_btn = InlineKeyboardButton(text=f'◀️', callback_data=f'like_kb_{left}')
+    else:
+        left_btn = InlineKeyboardButton(text=f'⏺', callback_data=f'like_kb_stop')
+
+    if right:
+        right_btn = InlineKeyboardButton(text=f'▶️', callback_data=f'like_kb_{right}')
+    else:
+        right_btn = InlineKeyboardButton(text=f'⏺', callback_data=f'like_kb_stop')
 
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
-    start_kb.add(left, right)
+    if not left and not right:
+        pass
+    else:
+        start_kb.add(left_btn, right_btn)
     start_kb.add(back)
     return start_kb
 

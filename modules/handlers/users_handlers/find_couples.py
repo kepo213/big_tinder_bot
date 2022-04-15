@@ -64,9 +64,9 @@ def create_text(user_id: int, premium_finder: str, show_user_link: bool = True):
 
 
 def find_person(user_id: int):
-    user_data = read_by_name(name='longitude, latitude, search_range, search_sex, premium, age_min, age_max',
+    user_data = read_by_name(name='longitude, latitude, search_range, user_sex, premium, age_min, age_max',
                              id_data=user_id, table='fast_info')[0]
-    lust_couple_id = read_by_name(name='id', id_data=user_id, table='couples')[0][0]
+    lust_couple_id = read_by_name(name='lust_couple_id', id_data=user_id, table='couples')[0][0]
     # keep params for search
     y_up = float(user_data[0]) + 0.0089 * int(user_data[2])
     y_down = float(user_data[0]) - 0.0089 * int(user_data[2])
@@ -74,9 +74,13 @@ def find_person(user_id: int):
     x_left = float(user_data[1]) - 0.015187 * int(user_data[2])
     age_min = int(user_data[5])
     age_max = int(user_data[6])
-    search_sex = user_data[3]
+    if str(user_data[3]) == 'men':
+        search_sex = 'female'
+    else:
+        search_sex = 'men'
     finded_user = (search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left,
                                  search_sex=search_sex, lust_id=lust_couple_id, age_min=age_min, age_max=age_max))
+    # print(finded_user)
     if str(finded_user) == '[]':
         finded_user = search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left,
                                     search_sex=search_sex, lust_id=0, age_min=age_min, age_max=age_max)

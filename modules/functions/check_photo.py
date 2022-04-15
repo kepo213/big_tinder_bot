@@ -7,7 +7,7 @@ def search_face(file_name: str = "111.jpg"):
     img = cv2.imread(f"modules/functions/{file_name}")
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    faces = face_cascade_db.detectMultiScale(img_gray, 1.1, 19)
+    faces = face_cascade_db.detectMultiScale(img_gray, 1.05, 6)
     return len(faces)
 
 

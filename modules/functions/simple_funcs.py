@@ -1,9 +1,7 @@
 from aiogram import types
 from modules.dispatcher import bot
-from modules.sql_func import update_db
 from modules.keyboards import start_user_kb
-from modules.sql_func import insert_user, reff_user, read_by_name, \
-    update_db, grow_balls_db, sender_table, read_all, photo_table, reffs_table
+from modules.sql_func import insert_user, reff_user, read_by_name, update_db, grow_balls_db
 
 
 def update_age_period(tg_ig: int, age: int):
@@ -59,3 +57,22 @@ async def check_balls(call: types.CallbackQuery):
         return True
     else:
         return False
+
+
+def get_right_left_btn(check_id: str, all_likes: tuple):
+    index = 1
+    for i in all_likes:
+        if i[0] == int(check_id):
+            break
+        index += 1
+
+    if index == 1:
+        left = False
+    else:
+        left = all_likes[index-2][0]
+
+    if index == len(all_likes):
+        right = False
+    else:
+        right = all_likes[index][0]
+    return index, left, right

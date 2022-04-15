@@ -114,6 +114,24 @@ def likes_table():
 
 
 # Новый юзер создает таблицу в бд
+def chat_roll_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS chat_roll (
+             id SERIAL PRIMARY KEY,
+             tg_id BIGINT,
+             status INTEGER DEFAULT 0,
+             messages INTEGER DEFAULT 0,
+             chats INTEGER DEFAULT 0,
+             karma INTEGER DEFAULT 0,
+             friend_id BIGINT DEFAULT 0)''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Новый юзер создает таблицу в бд
 def presents_table():
     global data_base
     try:
@@ -211,6 +229,10 @@ def insert_user(name: str, tg_id: str, user_nickname: str, table: str = 'all_use
                            f"VALUES (%s) "
                            f"ON CONFLICT DO NOTHING;", (tg_id,))
             data_base.commit()
+            cursor.execute(f"INSERT INTO chat_roll (tg_id) "
+                           f"VALUES (%s) "
+                           f"ON CONFLICT DO NOTHING;", (tg_id,))
+            data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
 
@@ -296,6 +318,39 @@ def grow_balls_db(data, id_name: str = 'tg_id'):
         print('[INFO] Error while working with db', _ex)
 
 
+# Обновляем данные в базе данных
+def grow_chat_messages_db(tg_id: int):
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"UPDATE chat_roll SET messages = messages + 1 WHERE tg_id=(%s)", (tg_id,))
+            data_base.commit()
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Обновляем данные в базе данных
+def grow_chat_chats_db(tg_id: int):
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"UPDATE chat_roll SET chats = chats + 1 WHERE tg_id=(%s)", (tg_id,))
+            data_base.commit()
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Обновляем данные в базе данных
+def grow_chat_karma_db(score: int, tg_id: int):
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"UPDATE chat_roll SET karma = karma + (%s) WHERE tg_id=(%s)", (score, tg_id))
+            data_base.commit()
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
 # Читаем все данные из базы данных
 def read_all(
         name: str = '*',
@@ -325,16 +380,50 @@ def count_all(
         print('[INFO] Error while working with db', _ex)
 
 
+# Читаем все данные из базы данных
+def count_refs_for_chats(tg_id: int,
+                         table: str = 'reff'):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'SELECT COUNT(*) FROM {table} WHERE mentor_tg_id = {tg_id}')
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
 # Собираем все записи с фильтрацией по 1 параметру
 def read_by_name(
         id_data,
         id_name: str = 'tg_id',
         name: str = '*',
         table: str = 'all_users'):
+    """
+    :rtype: tuple
+    """
     global data_base
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f"SELECT {name} FROM {table} WHERE {id_name}='{id_data}'")
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 1 параметру
+def count_chats():
+    """
+    :rtype: tuple
+    """
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT COUNT(*) FROM chat_roll WHERE (friend_id != 0 AND status = 0) OR "
+                           f"(status = 1)")
             data = cursor.fetchall()
             return data
 
@@ -375,6 +464,28 @@ def read_all_by_date(days: int = 30,
             cursor.execute(f"SELECT * FROM all_users WHERE {data_column} between "
                            f"'{data_30}'::timestamp and "
                            f"'{data_now}'::timestamp order by id desc")
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по интервалу дат
+def join_chat_data(tg_id: int):
+    global data_base
+    try:
+        data_now = datetime.datetime.now()
+        data_15 = data_now - datetime.timedelta(minutes=15)
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, chat_roll.status, fast_info.user_sex, all_users.activity FROM "
+                           f"((all_users INNER JOIN chat_roll ON all_users.tg_id = chat_roll.tg_id) "
+                           f"INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id) WHERE "
+                           f"(all_users.activity BETWEEN "
+                           f"'{data_15}'::timestamp AND "
+                           f"'{data_now}'::timestamp) AND "
+                           f"(chat_roll.status = 1) AND "
+                           f"(all_users.tg_id != (%s))", (tg_id,))
             data = cursor.fetchall()
             return data
 
@@ -486,6 +597,21 @@ def join_profile_all(id_data: int):
                            f"fast_info.photo_id, fast_info.photo_good, fast_info.about_text, fast_info.emoji,"
                            f"fast_info.zodiac, fast_info.instagram, fast_info.premium "
                            f"FROM all_users JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE "
+                           f"all_users.tg_id=(%s)", (id_data,))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 3 параметрам
+def join_chat_stata(id_data: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.user_name, fast_info.user_sex, fast_info.age_min, fast_info.age_max, "
+                           f"fast_info.city FROM all_users JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE "
                            f"all_users.tg_id=(%s)", (id_data,))
             data = cursor.fetchall()
             return data

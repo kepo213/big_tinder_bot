@@ -6,9 +6,81 @@ import logging
 from modules.handlers.users_handlers.find_couples import show_other_profile
 from modules.dispatcher import bot
 from modules.handlers.users_handlers.find_couples import find_person, show_adv
-from modules.sql_func import update_db, read_by_name, insert_likes_presents_db, read_all_2
+from modules.sql_func import update_db, read_by_name, insert_likes_presents_db, read_all_2, grow_chat_messages_db, \
+    grow_chat_karma_db
 from aiogram.dispatcher import FSMContext
-from modules.keyboards import user_like_like_adv_kb, user_couples_kb
+from modules.keyboards import user_like_like_adv_kb, user_couples_kb, chat_likes_kb
+
+
+# Profile menu
+@dp.message_handler(premium_in_chat=True, state='*', content_types=types.ContentTypes.ANY)
+async def start_menu(message: types.Message):
+    friend_id = read_by_name(table='chat_roll', name='friend_id', id_data=message.from_user.id)[0][0]
+    if message.text == '/stop' or message.text == '❌ Остановить!':
+        update_db(table="chat_roll", name="friend_id", data=0, id_data=message.from_user.id)
+        update_db(table="chat_roll", name="friend_id", data=0, id_data=friend_id)
+        await bot.send_message(chat_id=friend_id, text='Диалог остановлен 🤧', reply_markup=types.ReplyKeyboardRemove())
+        await bot.send_message(chat_id=message.from_user.id, text='Диалог остановлен 🤧',
+                               reply_markup=types.ReplyKeyboardRemove())
+        await bot.send_message(chat_id=friend_id, text='📝Оцените собеседника', reply_markup=chat_likes_kb(friend_id))
+        await bot.send_message(chat_id=message.from_user.id, text='📝Оцените собеседника',
+                               reply_markup=chat_likes_kb(friend_id))
+        return
+
+    grow_chat_messages_db(message.from_user.id)
+    if message.content_type == 'photo':
+        await bot.send_photo(chat_id=friend_id, caption=message.text, photo=message.photo[-1].file_id)
+    elif message.content_type == 'video':
+        await bot.send_video(chat_id=friend_id, caption=message.text, video=message.video.file_id)
+    elif message.content_type == 'audio':
+        await bot.send_audio(chat_id=friend_id, caption=message.text, video=message.audio.file_id)
+    elif message.content_type == 'animation':
+        await bot.send_animation(chat_id=friend_id, caption=message.text, video=message.animation.file_id)
+    elif message.content_type == 'text':
+        if message.text == '👤 Показать свой профиль':
+            text, photo_id = show_other_profile(user_id=message.from_user.id, user_finder_id=friend_id)
+            await message.answer('📨Мы отправили вашу анкету!')
+            await bot.send_photo(chat_id=friend_id, caption=text, photo=photo_id, parse_mode='html')
+        else:
+            await bot.send_message(chat_id=friend_id, text=message.text)
+
+
+# Profile menu
+@dp.message_handler(chat_roll=True, state='*')
+async def start_menu(message: types.Message):
+    friend_id = read_by_name(table='chat_roll', name='friend_id', id_data=message.from_user.id)[0][0]
+    if message.text == '/stop' or message.text == '❌ Остановить!':
+        update_db(table="chat_roll", name="friend_id", data=0, id_data=message.from_user.id)
+        update_db(table="chat_roll", name="friend_id", data=0, id_data=friend_id)
+        await bot.send_message(chat_id=friend_id, text='Диалог остановлен 🤧', reply_markup=types.ReplyKeyboardRemove())
+        await bot.send_message(chat_id=message.from_user.id, text='Диалог остановлен 🤧',
+                               reply_markup=types.ReplyKeyboardRemove())
+        await bot.send_message(chat_id=friend_id, text='📝Оцените собеседника',
+                               reply_markup=chat_likes_kb(message.from_user.id))
+        await bot.send_message(chat_id=message.from_user.id, text='📝Оцените собеседника',
+                               reply_markup=chat_likes_kb(friend_id))
+        return
+    elif message.text == '👤 Показать свой профиль':
+        text, photo_id = show_other_profile(user_id=message.from_user.id, user_finder_id=friend_id)
+        await message.answer('📨Мы отправили вашу анкету!')
+        await bot.send_photo(chat_id=friend_id, caption=text, photo=photo_id, parse_mode='html')
+    else:
+        grow_chat_messages_db(message.from_user.id)
+        await bot.send_message(chat_id=friend_id, text=message.text)
+
+
+@dp.callback_query_handler(state='*', text_contains='markchat_')
+async def start_menu(call: types.CallbackQuery):
+    call_text = call.data
+    friend_id = call_text.split('_')[2]
+    if call_text.startswith('markchat_good_'):
+        grow_chat_karma_db(score=1, tg_id=int(friend_id))
+        await call.message.answer("Спасибо за оценку!")
+    elif call_text.startswith('markchat_bad_'):
+        grow_chat_karma_db(score=-1, tg_id=int(friend_id))
+        await call.message.answer("Спасибо за оценку!")
+    else:
+        await present_shat(call)
 
 
 @dp.callback_query_handler(state='*', text_contains='verifikation_')
@@ -79,7 +151,7 @@ async def start_menu(call: types.CallbackQuery):
 
 
 @dp.callback_query_handler(state='*', text_contains='couple_present_')
-async def start_menu(call: types.CallbackQuery):
+async def present_shat(call: types.CallbackQuery):
     if not await check_balls(call):
         return await call.message.answer('У вас недостаточно баллов!')
 

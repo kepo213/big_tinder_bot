@@ -62,19 +62,26 @@ def start_user_kb():
 
 
 def user_likes_kb():
+    double_like = InlineKeyboardButton(text='👍 Взаимный лайк', callback_data='user_double_likes')
+    you_likes = InlineKeyboardButton(text='👍 Вы лайкнули', callback_data='user_you_likes')
     user_likes = InlineKeyboardButton(text='👍 Вы понравились', callback_data='user_likes')
     user_presents_send = InlineKeyboardButton(text='🎁 Кому отправил', callback_data='user_presents_send')
     user_presents_from = InlineKeyboardButton(text='🎁 От кого получил', callback_data='user_presents_from')
-    start_kb = InlineKeyboardMarkup()
+    start_kb = InlineKeyboardMarkup().add(double_like)
+    start_kb.add(you_likes)
     start_kb.add(user_likes)
     start_kb.add(user_presents_send)
     start_kb.add(user_presents_from)
     return start_kb
 
 
-def chat_likes_kb(tg_id: int):
-    user_likes = InlineKeyboardButton(text='👍', callback_data=f'markchat_good_{tg_id}')
+def chat_likes_kb(tg_id: int, status: bool = True):
     user_presents_send = InlineKeyboardButton(text='🎁', callback_data=f'markchat_present_{tg_id}')
+    if status:
+        pass
+    else:
+        tg_id = 'click'
+    user_likes = InlineKeyboardButton(text='👍', callback_data=f'markchat_good_{tg_id}')
     user_presents_from = InlineKeyboardButton(text='👎', callback_data=f'markchat_bad_{tg_id}')
     start_kb = InlineKeyboardMarkup()
     start_kb.add(user_likes, user_presents_send, user_presents_from)
@@ -94,7 +101,7 @@ def likes_kb(users: tuple):
     return start_kb
 
 
-def likes_in_profile_kb(left: bool = False, right: bool = False):
+def likes_in_profile_kb(this_: str, left: bool = False, right: bool = False):
     start_kb = InlineKeyboardMarkup()
     if left:
         left_btn = InlineKeyboardButton(text=f'◀️', callback_data=f'like_kb_{left}')
@@ -106,12 +113,13 @@ def likes_in_profile_kb(left: bool = False, right: bool = False):
     else:
         right_btn = InlineKeyboardButton(text=f'⏺', callback_data=f'like_kb_stop')
 
+    delete = InlineKeyboardButton(text=f'🗑 Удалить', callback_data=f'like_kb_delete_{this_}')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     if not left and not right:
         pass
     else:
         start_kb.add(left_btn, right_btn)
-    start_kb.add(back)
+    start_kb.add(delete, back)
     return start_kb
 
 
@@ -170,6 +178,16 @@ def main_user_kb():
     start_kb.add(likes, my_profile)
     start_kb.add(compatibility, premium)
     start_kb.add(settings, bot_help)
+    return start_kb
+
+
+def users_score_kb():
+    chat_score_karma = InlineKeyboardButton(text='👁 По карме', callback_data='chat_score_karma')
+    chat_score_messages = InlineKeyboardButton(text='📧 По сообщениям', callback_data='chat_score_messages')
+    chat_score_dialogs = InlineKeyboardButton(text='💬 По диалогам', callback_data='chat_score_dialogs')
+    start_kb = InlineKeyboardMarkup(resize_keyboard=True)
+    start_kb.add(chat_score_karma, chat_score_messages)
+    start_kb.add(chat_score_dialogs)
     return start_kb
 
 

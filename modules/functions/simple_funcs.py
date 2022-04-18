@@ -1,7 +1,7 @@
 from aiogram import types
 from modules.dispatcher import bot
 from modules.keyboards import start_user_kb
-from modules.sql_func import insert_user, reff_user, read_by_name, update_db, grow_balls_db
+from modules.sql_func import insert_user, reff_user, read_by_name, update_db, grow_balls_db, chat_score_join
 
 
 def update_age_period(tg_ig: int, age: int):
@@ -64,8 +64,8 @@ def get_right_left_btn(check_id: str, all_likes: tuple):
     for i in all_likes:
         if i[0] == int(check_id):
             break
-        index += 1
-
+        else:
+            index += 1
     if index == 1:
         left = False
     else:
@@ -76,3 +76,30 @@ def get_right_left_btn(check_id: str, all_likes: tuple):
     else:
         right = all_likes[index][0]
     return index, left, right
+
+
+def chat_roll_score(key: str):
+    all_score = chat_score_join(key=key)
+    if key == 'karma':
+        item = 'карм'
+    elif key == 'messages':
+        item = 'сообщений'
+    elif key == 'chats':
+        item = 'диалогов'
+    else:
+        item = ''
+    text = ''
+    a = 1
+    for i in all_score:
+        if a == 1:
+            smile = '🥇'
+        elif a == 2:
+            smile = '🥈'
+        elif a == 3:
+            smile = '🥉'
+        else:
+            smile = ''
+        text = text + f'{smile}{a}.{i[1]}➖<b>{i[2]}</b> {item}\n'
+        a += 1
+    return text
+

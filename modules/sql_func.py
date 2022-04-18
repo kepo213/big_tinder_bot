@@ -106,8 +106,8 @@ def likes_table():
              id SERIAL PRIMARY KEY,
              tg_id BIGINT,
              from_tg_id BIGINT DEFAULT 0,
-             status TEXT DEFAULT 'active',
-             present INTEGER DEFAULT 0)''')
+             status_from TEXT DEFAULT 'no',
+             status_to TEXT DEFAULT 'no')''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -139,8 +139,9 @@ def presents_table():
             cursor.execute(f'''CREATE TABLE IF NOT EXISTS presents (
              id SERIAL PRIMARY KEY,
              tg_id BIGINT,
-             from_tg_id BIGINT DEFAULT 0,
-             status TEXT DEFAULT 'active')''')
+             from_tg_id BIGINT DEFAULT 0,         
+             status_from TEXT DEFAULT 'no',
+             status_to TEXT DEFAULT 'no')''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -268,8 +269,8 @@ def insert_likes_presents_db(tg_id: int, from_tg_id: int, table: str = 'likes'):
     global data_base
     try:
         with data_base.cursor() as cursor:
-            cursor.execute(f"INSERT INTO {table} (tg_id, from_tg_id) VALUES (%s, %s) "
-                           f"ON CONFLICT DO NOTHING;", (tg_id, from_tg_id))
+            cursor.execute(f"INSERT INTO {table} (tg_id, from_tg_id, status_from) VALUES (%s, %s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (tg_id, from_tg_id, 'active'))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -359,6 +360,20 @@ def read_all(
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f'SELECT {name} FROM {table}')
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Читаем все данные из базы данных
+def chat_score_join(key: str = '*'):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'SELECT chat_roll.tg_id, all_users.user_name, chat_roll.{key} FROM chat_roll '
+                           f'INNER JOIN all_users ON chat_roll.tg_id = all_users.tg_id ORDER BY chat_roll.{key} DESC LIMIT 10')
             data = cursor.fetchall()
             return data
 
@@ -505,6 +520,31 @@ def read_all_2(
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f"SELECT {name} FROM {table} WHERE {id_name}=(%s) AND {id_name2}=(%s)", (id_data, id_data2))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 3 параметрам
+def read_all_3(
+        id_data,
+        id_data2,
+        id_data3,
+        id_name: str = 'tg_id',
+        id_name2: str = 'tg_id',
+        id_name3: str = 'tg_id',
+        name: str = '*',
+        table: str = 'all_users'):
+    '''
+    :rtype :tuple
+    '''
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT {name} FROM {table} WHERE {id_name}=(%s) AND {id_name2}=(%s) AND {id_name3}=(%s)",
+                           (id_data, id_data2, id_data3))
             data = cursor.fetchall()
             return data
 

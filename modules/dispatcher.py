@@ -91,7 +91,9 @@ class UserCouples(StatesGroup):
 
 class UserLikes(StatesGroup):
     start = State()
+    likes_frome_me = State()
     likes_for_me = State()
+    likes_double = State()
     presents_for_me = State()
     presents_from_me = State()
 
@@ -99,3 +101,5 @@ class UserLikes(StatesGroup):
 class UserChatRoll(StatesGroup):
     start = State()
     talk = State()
+
+    score = State()

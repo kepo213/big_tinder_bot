@@ -1,15 +1,14 @@
 from aiogram import types
 from main import dp
-from modules.dispatcher import constant
 from aiogram.dispatcher.filters import Text
 
 from modules.dispatcher import bot, UserChatRoll, UserCouples
 from modules.handlers.users_handlers.find_couples import show_other_profile
-from modules.keyboards import chat_roll, chat_roll_start
+from modules.keyboards import chat_roll, chat_roll_start, users_score_kb
 from modules.sql_func import update_db, read_by_name, search_person, join_profile_all, read_all_2, \
     insert_likes_presents_db, join_chat_stata, count_refs_for_chats, join_chat_data, grow_chat_chats_db, count_chats
 from modules.handlers.handlers_func import edit_text_call
-from modules.functions.simple_funcs import update_age_period, get_right_left_btn
+from modules.functions.simple_funcs import update_age_period, get_right_left_btn, chat_roll_score
 
 
 # Profile menu
@@ -68,3 +67,30 @@ async def start_menu(message: types.Message):
                          f'🎪 Приглашено пользователей — {refs}', parse_mode='html',
                          reply_markup=chat_roll())
     await UserChatRoll.start.set()
+
+
+# Profile menu
+@dp.message_handler(Text(equals='🏆 Рейтинг', ignore_case=True), state=UserChatRoll.start)
+async def start_menu(message: types.Message):
+    user_data = join_chat_stata(id_data=message.from_user.id)[0]
+    await message.answer(f'🏆 Рейтинг', parse_mode='html',
+                         reply_markup=users_score_kb())
+    await UserChatRoll.score.set()
+
+
+@dp.callback_query_handler(state=UserChatRoll.score, text_contains='chat_score_karma')
+async def start_menu(call: types.CallbackQuery):
+    text = chat_roll_score(key='karma')
+    await call.message.answer(f'🏆 Рейтинг\n👁 По карме\n{text}', parse_mode='html')
+
+
+@dp.callback_query_handler(state=UserChatRoll.score, text_contains='chat_score_messages')
+async def start_menu(call: types.CallbackQuery):
+    text = chat_roll_score(key='messages')
+    await call.message.answer(f'🏆 Рейтинг\n📧 По сообщениям\n{text}', parse_mode='html')
+
+
+@dp.callback_query_handler(state=UserChatRoll.score, text_contains='chat_score_dialogs')
+async def start_menu(call: types.CallbackQuery):
+    text = chat_roll_score(key='chats')
+    await call.message.answer(f'🏆 Рейтинг\n💬 По диалогам\n{text}', parse_mode='html')

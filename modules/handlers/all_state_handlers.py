@@ -73,12 +73,20 @@ async def start_menu(message: types.Message):
 async def start_menu(call: types.CallbackQuery):
     call_text = call.data
     friend_id = call_text.split('_')[2]
-    if call_text.startswith('markchat_good_'):
+    if call_text.startswith('markchat_good_click'):
+        await call.message.answer("Вы уже оценили этого пользователя!")
+    elif call_text.startswith('markchat_bad_click'):
+        await call.message.answer("Вы уже оценили этого пользователя!")
+    elif call_text.startswith('markchat_good_'):
         grow_chat_karma_db(score=1, tg_id=int(friend_id))
+        await call.message.edit_text(text='📝Оцените собеседника',
+                                     reply_markup=chat_likes_kb(tg_id=int(friend_id), status=False))
         await call.message.answer("Спасибо за оценку!")
     elif call_text.startswith('markchat_bad_'):
         grow_chat_karma_db(score=-1, tg_id=int(friend_id))
         await call.message.answer("Спасибо за оценку!")
+        await call.message.edit_text(text='📝Оцените собеседника',
+                                     reply_markup=chat_likes_kb(tg_id=int(friend_id), status=False))
     else:
         await present_shat(call)
 
@@ -119,7 +127,8 @@ async def show_next_profile(call: types.CallbackQuery):
         await call.message.answer('🤷‍♂️ Мы никого не нашли, увеличьте расстояние - /settings')
         return
     await call.message.answer_photo(caption=text, photo=photo_id, parse_mode='html',
-                                    reply_markup=user_couples_kb(user_id=finded_user_id, presents=int(user_data[1])//100))
+                                    reply_markup=user_couples_kb(user_id=finded_user_id,
+                                                                 presents=int(user_data[1]) // 100))
 
 
 @dp.callback_query_handler(state='*', text_contains='couple_yes_')
@@ -129,6 +138,10 @@ async def start_menu(call: types.CallbackQuery):
     await bot.send_message(text='Вас лайкнули показать кто?', chat_id=user_id,
                            reply_markup=user_like_like_adv_kb(call.from_user.id))
     await show_next_profile(call)
+    user_sex = read_all_2(name='id', id_name='from_tg_id', id_data=call.from_user.id,
+                          id_name2='from_tg_id', id_data2=int(user_id), table='likes')
+    if str(user_sex) == '[]':
+        insert_likes_presents_db(tg_id=int(user_id), from_tg_id=call.from_user.id)
 
 
 @dp.callback_query_handler(state='*', text_contains='couple_double_yes_')
@@ -138,8 +151,7 @@ async def start_menu(call: types.CallbackQuery):
 
     user_sex = read_all_2(name='id', id_name='tg_id', id_data=call.from_user.id,
                           id_name2='from_tg_id', id_data2=int(user_id), table='likes')
-    if str(user_sex) == '[]':
-        insert_likes_presents_db(tg_id=call.from_user.id, from_tg_id=int(user_id))
+    update_db(table='likes', name='status_to', data='active', id_name='id', id_data=user_sex[0][0])
     await call.message.delete()
     await bot.send_photo(caption=text, photo=photo_id, chat_id=call.from_user.id, parse_mode='html')
 
@@ -159,7 +171,11 @@ async def present_shat(call: types.CallbackQuery):
     my_user_name = read_by_name(table='all_users', name='user_name', id_data=call.from_user.id)[0][0]
     user_name = read_by_name(table='all_users', name='user_name', id_data=user_id)[0][0]
     user_nickname = read_by_name(table='fast_info', name='user_nickname', id_data=user_id)[0][0]
-    insert_likes_presents_db(tg_id=int(user_id), from_tg_id=call.from_user.id, table='presents')
+
+    user_tg_id = read_all_2(name='id', id_name='from_tg_id', id_data=call.from_user.id,
+                            id_name2='tg_id', id_data2=int(user_id), table='presents')
+    if str(user_tg_id) == '[]':
+        insert_likes_presents_db(tg_id=int(user_id), from_tg_id=call.from_user.id, table='presents')
     if user_nickname is None:
         await call.message.answer(f'Вы получили доступ к <a href="tg://user?id={user_id}">диалогу</a> {user_name}',
                                   parse_mode='html')

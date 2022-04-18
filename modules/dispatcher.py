@@ -44,6 +44,13 @@ class AdminSender(StatesGroup):
     choose_users = State()
     confirm_sender = State()
 
+    sender_min_age = State()
+    sender_max_age = State()
+    sender_confirm = State()
+
+    sender_city = State()
+    sender_city_confirm = State()
+
 
 class User(StatesGroup):
     start = State()
@@ -91,11 +98,7 @@ class UserCouples(StatesGroup):
 
 class UserLikes(StatesGroup):
     start = State()
-    likes_frome_me = State()
-    likes_for_me = State()
-    likes_double = State()
-    presents_for_me = State()
-    presents_from_me = State()
+    check_inform = State()
 
 
 class UserChatRoll(StatesGroup):

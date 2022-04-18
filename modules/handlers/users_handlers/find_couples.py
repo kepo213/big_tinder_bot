@@ -1,15 +1,12 @@
 
 from aiogram import types
 from main import dp
-from modules.dispatcher import constant
 from aiogram.dispatcher.filters import Text
 
 from modules.dispatcher import bot, UserProfile, UserCouples
 from modules.functions.check_photo import search_face
 from modules.keyboards import user_couples_kb, user_couples_adv_kb
 from modules.sql_func import update_db, read_by_name, search_person, join_profile_all
-from modules.handlers.handlers_func import edit_text_call
-from modules.functions.simple_funcs import update_age_period
 
 
 def create_text(user_id: int, premium_finder: str, show_user_link: bool = True):

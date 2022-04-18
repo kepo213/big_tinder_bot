@@ -148,7 +148,7 @@ def presents_table():
 
 
 # Админ создает таблицу для рассылки
-def sender_table():
+def constants_table():
     global data_base
     try:
         with data_base.cursor() as cursor:
@@ -468,6 +468,25 @@ def search_person(
         print('[INFO] Error while working with db', _ex)
 
 
+# Собираем все записи с фильтрацией по 1 параметру
+def search_persons_for_sender(
+        x_left: float, x_right: float,
+        y_up: float, y_down: float):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT fast_info.tg_id, all_users.status FROM fast_info INNER JOIN all_users ON "
+                           f"fast_info.tg_id = all_users.tg_id WHERE "
+                           f"(fast_info.longitude BETWEEN '{x_left}' AND '{x_right}') "
+                           f"AND (fast_info.latitude BETWEEN '{y_down}' AND '{y_up}') "
+                           f"AND (all_users.status = 'active')")
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
 # Собираем все записи с фильтрацией по интервалу дат
 def read_all_by_date(days: int = 30,
                      data_column: str = 'first_reg'):
@@ -501,6 +520,38 @@ def join_chat_data(tg_id: int):
                            f"'{data_now}'::timestamp) AND "
                            f"(chat_roll.status = 1) AND "
                            f"(all_users.tg_id != (%s))", (tg_id,))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по интервалу дат
+def join_sender_sex(sex: str):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, all_users.status, fast_info.user_sex FROM "
+                           f"all_users INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id "
+                           f"WHERE all_users.status = 'active' AND "
+                           f"fast_info.user_sex = (%s)", (sex,))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по интервалу дат
+def join_sender_age(age_min: int, age_max: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, fast_info.user_age FROM "
+                           f"all_users INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id "
+                           f"WHERE all_users.status = 'active' AND "
+                           f"fast_info.user_age BETWEEN (%s) AND (%s)", (age_min, age_max))
             data = cursor.fetchall()
             return data
 

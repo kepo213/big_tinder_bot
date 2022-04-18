@@ -64,7 +64,7 @@ def start_user_kb():
 def user_likes_kb():
     double_like = InlineKeyboardButton(text='👍 Взаимный лайк', callback_data='user_double_likes')
     you_likes = InlineKeyboardButton(text='👍 Вы лайкнули', callback_data='user_you_likes')
-    user_likes = InlineKeyboardButton(text='👍 Вы понравились', callback_data='user_likes')
+    user_likes = InlineKeyboardButton(text='👍 Вас лайкнули', callback_data='user_likes')
     user_presents_send = InlineKeyboardButton(text='🎁 Кому отправил', callback_data='user_presents_send')
     user_presents_from = InlineKeyboardButton(text='🎁 От кого получил', callback_data='user_presents_from')
     start_kb = InlineKeyboardMarkup().add(double_like)
@@ -311,7 +311,7 @@ def close_it():
 
 
 # клавиатура для админа стартовая
-def confirm(without_back=False, without_yes=False, ):
+def confirm(without_back=False, without_yes=False):
     yes_all_good = InlineKeyboardButton(text=f'Да все хорошо!', callback_data=f'yes_all_good')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     user_main = InlineKeyboardMarkup()
@@ -329,13 +329,19 @@ def confirm(without_back=False, without_yes=False, ):
 # клавиатура для админа стартовая
 def choose_users():
     send_all = InlineKeyboardButton(text=f'Вообще всем', callback_data=f'send_all')
-    send_en = InlineKeyboardButton(text=f'Все англоговорящие', callback_data=f'send_en')
-    send_ru = InlineKeyboardButton(text=f'Все русскоговорящие', callback_data=f'send_ru')
+    send_en = InlineKeyboardButton(text=f'Все 🇬🇧', callback_data=f'send_en')
+    send_ru = InlineKeyboardButton(text=f'Все 🇷🇺', callback_data=f'send_ru')
+    send_boys = InlineKeyboardButton(text=f'Все парни', callback_data=f'send_boys')
+    send_girls = InlineKeyboardButton(text=f'Все девушки', callback_data=f'send_girls')
+    send_age = InlineKeyboardButton(text=f'Всем по возрасту', callback_data=f'send_age')
+    send_city = InlineKeyboardButton(text=f'Всем в Городе', callback_data=f'send_city')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     user_main = InlineKeyboardMarkup()
     user_main.add(send_all)
-    user_main.add(send_en)
-    user_main.add(send_ru)
+    user_main.add(send_ru, send_en)
+    user_main.add(send_boys, send_girls)
+    user_main.add(send_age)
+    user_main.add(send_city)
     user_main.add(back)
     return user_main
 

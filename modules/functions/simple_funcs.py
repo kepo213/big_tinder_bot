@@ -1,7 +1,8 @@
 from aiogram import types
 from modules.dispatcher import bot
 from modules.keyboards import start_user_kb
-from modules.sql_func import insert_user, reff_user, read_by_name, update_db, grow_balls_db, chat_score_join
+from modules.sql_func import insert_user, reff_user, read_by_name, update_db, grow_balls_db, chat_score_join, \
+    read_all_3, read_all_2
 
 
 def update_age_period(tg_ig: int, age: int):
@@ -53,7 +54,7 @@ async def start_reffs(message: types.Message):
 async def check_balls(call: types.CallbackQuery):
     my_balls = int(read_by_name(table='fast_info', name='balls_balance', id_data=call.from_user.id)[0][0])
     if my_balls >= 100:
-        update_db(table="fast_info", name="balls_balance", data=my_balls-100, id_data=call.from_user.id)
+        update_db(table="fast_info", name="balls_balance", data=my_balls - 100, id_data=call.from_user.id)
         return True
     else:
         return False
@@ -69,7 +70,7 @@ def get_right_left_btn(check_id: str, all_likes: tuple):
     if index == 1:
         left = False
     else:
-        left = all_likes[index-2][0]
+        left = all_likes[index - 2][0]
 
     if index == len(all_likes):
         right = False
@@ -103,3 +104,114 @@ def chat_roll_score(key: str):
         a += 1
     return text
 
+
+def likes_all_inform(user_id: int):
+    double1 = read_all_3(name='id', id_data=user_id, id_name2='status_from', id_data2='active',
+                         id_name3='status_to', id_data3='active', table='likes')
+    double2 = read_all_3(name='id', id_name='from_tg_id', id_data=user_id, id_name2='status_from',
+                         id_data2='active', id_name3='status_to', id_data3='active', table='likes')
+    double = double1 + double2
+    all_likes_from_me1 = read_all_2(name='id', id_name='from_tg_id', id_data=user_id,
+                                    id_name2='status_from', id_data2='active', table='likes')
+    all_likes_from_me2 = read_all_2(name='id', id_name='tg_id', id_data=user_id,
+                                    id_name2='status_to', id_data2='active', table='likes')
+    all_likes_from_me = all_likes_from_me1 + all_likes_from_me2
+    all_likes_to_me_1 = read_all_2(name='id', id_name='tg_id', id_data=user_id, id_name2='status_to',
+                                   id_data2='no', table='likes')
+    all_likes_to_me_2 = read_all_2(name='id', id_name='tg_id', id_data=user_id, id_name2='status_to',
+                                   id_data2='active', table='likes')
+    all_likes_to_me_3 = read_all_2(name='id', id_name='from_tg_id', id_data=user_id, id_name2='status_from',
+                                   id_data2='active', table='likes')
+    all_likes_to_me = all_likes_to_me_1 + all_likes_to_me_2 + all_likes_to_me_3
+    all_send_presents = read_all_2(name='id', id_name="from_tg_id", id_data=user_id, id_name2='status_from',
+                                   id_data2='active', table='presents')
+    all_receive_presents = read_all_2(name='id', id_name="tg_id", id_data=user_id,
+                                      id_name2='status_to', id_data2='no', table='presents')
+    return double, all_likes_from_me, all_likes_to_me, all_send_presents, all_receive_presents
+
+
+def likes_one_details_inform(call_data: str, user_id: int):
+    if str(call_data) == 'user_you_likes':
+        text = '👍 Вам понравились'
+        empty_text = '😭 Увы, но вы еще не поставили ни одного лайка.'
+        all_likes_from_me1 = read_all_2(name='tg_id', id_name='from_tg_id', id_data=user_id,
+                                        id_name2='status_from', id_data2='active', table='likes')
+        all_likes_from_me2 = read_all_2(name='from_tg_id', id_name='tg_id', id_data=user_id,
+                                        id_name2='status_to', id_data2='active', table='likes')
+        all_likes = all_likes_from_me1 + all_likes_from_me2
+
+    elif str(call_data) == 'user_likes':
+        text = '👍 Вы понравились'
+        empty_text = '😭 Увы, но вы еще не получили ни одного лайка:'
+        all_likes_to_me_1 = read_all_2(name='from_tg_id', id_name='tg_id', id_data=user_id, id_name2='status_to',
+                                       id_data2='no', table='likes')
+        all_likes_to_me_2 = read_all_2(name='from_tg_id', id_name='tg_id', id_data=user_id, id_name2='status_to',
+                                       id_data2='active', table='likes')
+        all_likes_to_me_3 = read_all_2(name='tg_id', id_name='from_tg_id', id_data=user_id, id_name2='status_from',
+                                       id_data2='active', table='likes')
+        all_likes = all_likes_to_me_1 + all_likes_to_me_2 + all_likes_to_me_3
+
+    elif str(call_data) == 'user_double_likes':
+        text = '👍 Взаимных лайков'
+        empty_text = 'Увы, но у вас еще нет взаимных симпатий, ставьте лайки другим ' \
+                     'пользователям и вы обязательно найдете взаимную симпатию 😇'
+        double1 = read_all_3(name='from_tg_id', id_name='tg_id', id_data=user_id, id_name2='status_from',
+                             id_data2='active', id_name3='status_to', id_data3='active', table='likes')
+        double2 = read_all_3(name='tg_id', id_name='from_tg_id', id_data=user_id, id_name2='status_from',
+                             id_data2='active', id_name3='status_to', id_data3='active', table='likes')
+        all_likes = double1 + double2
+
+    elif str(call_data) == 'user_presents_send':
+        text = '🎁 Кому отправил'
+        empty_text = 'Вы еще никому не отправляли 🎁 подарки.'
+        all_likes = read_all_2(name='tg_id', id_name="from_tg_id", id_data=user_id, id_name2='status_from',
+                               id_data2='active', table='presents')
+
+    elif str(call_data) == 'user_presents_from':
+        text = '🎁 От кого получил'
+        empty_text = '😔 Увы, но вы еще не получили ни одно 🎁 подарка'
+        all_likes = read_all_2(name='from_tg_id', id_name="tg_id", id_data=user_id,
+                               id_name2='status_to', id_data2='no', table='presents')
+
+    else:
+        all_likes = '[]'
+        empty_text = 'Error'
+        text = 'Empty'
+    return all_likes, empty_text, text
+
+
+def likes_one_delete_inform(call_data: str, user_id: int):
+    print(call_data)
+    if str(call_data) == 'user_you_likes':
+        all_likes_from_me = read_all_2(name='id', id_name='from_tg_id', id_data=user_id,
+                                       id_name2='status_from', id_data2='active', table='likes')
+        if str(all_likes_from_me) != '[]':
+            update_db(table='likes', name='status_from', data='delete', id_name='from_tg_id', id_data=user_id)
+        else:
+            update_db(table='likes', name='status_to', data='delete', id_name='tg_id', id_data=user_id)
+
+    elif str(call_data) == 'user_likes':
+
+        all_likes_from_me = read_all_2(name='id', id_name='from_tg_id', id_data=user_id,
+                                       id_name2='status_from', id_data2='active', table='likes')
+        if str(all_likes_from_me) != '[]':
+            update_db(table='likes', name='status_from', data='delete', id_name='from_tg_id', id_data=user_id)
+        else:
+            update_db(table='likes', name='status_to', data='delete', id_name='tg_id', id_data=user_id)
+
+    elif str(call_data) == 'user_double_likes':
+        all_likes_from_me = read_all_2(name='id', id_name='from_tg_id', id_data=user_id,
+                                       id_name2='status_from', id_data2='active', table='likes')
+        if str(all_likes_from_me) != '[]':
+            update_db(table='likes', name='status_from', data='delete', id_name='from_tg_id', id_data=user_id)
+        else:
+            update_db(table='likes', name='status_to', data='delete', id_name='tg_id', id_data=user_id)
+
+    elif str(call_data) == 'user_presents_send':
+        update_db(table='presents', name='status_from', data='delete', id_name='from_tg_id', id_data=user_id)
+
+    elif str(call_data) == 'user_presents_from':
+        update_db(table='presents', name='status_to', data='delete', id_name='tg_id', id_data=user_id)
+
+    else:
+        pass

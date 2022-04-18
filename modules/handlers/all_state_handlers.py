@@ -138,9 +138,11 @@ async def start_menu(call: types.CallbackQuery):
     await bot.send_message(text='Вас лайкнули показать кто?', chat_id=user_id,
                            reply_markup=user_like_like_adv_kb(call.from_user.id))
     await show_next_profile(call)
-    user_sex = read_all_2(name='id', id_name='from_tg_id', id_data=call.from_user.id,
-                          id_name2='from_tg_id', id_data2=int(user_id), table='likes')
-    if str(user_sex) == '[]':
+    user_data_1 = read_all_2(name='id', id_name='from_tg_id', id_data=call.from_user.id,
+                             id_name2='tg_id', id_data2=int(user_id), table='likes')
+    user_data_2 = read_all_2(name='id', id_name='tg_id', id_data=call.from_user.id,
+                             id_name2='from_tg_id', id_data2=int(user_id), table='likes')
+    if str(user_data_1) == '[]' and str(user_data_2) == '[]':
         insert_likes_presents_db(tg_id=int(user_id), from_tg_id=call.from_user.id)
 
 

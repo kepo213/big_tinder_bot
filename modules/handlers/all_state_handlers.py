@@ -1,6 +1,6 @@
 from aiogram import types
 from main import dp
-from modules.functions.simple_funcs import check_balls
+from modules.functions.simple_funcs import check_balls, show_chat_roll_adv
 from modules.handlers.handlers_func import edit_text_call
 import logging
 from modules.handlers.users_handlers.find_couples import show_other_profile
@@ -9,7 +9,7 @@ from modules.handlers.users_handlers.find_couples import find_person, show_adv
 from modules.sql_func import update_db, read_by_name, insert_likes_presents_db, read_all_2, grow_chat_messages_db, \
     grow_chat_karma_db
 from aiogram.dispatcher import FSMContext
-from modules.keyboards import user_like_like_adv_kb, user_couples_kb, chat_likes_kb
+from modules.keyboards import user_like_like_adv_kb, user_couples_kb, chat_likes_kb, main_user_kb
 
 
 # Profile menu
@@ -55,6 +55,7 @@ async def start_menu(message: types.Message):
         await bot.send_message(chat_id=friend_id, text='Диалог остановлен 🤧', reply_markup=types.ReplyKeyboardRemove())
         await bot.send_message(chat_id=message.from_user.id, text='Диалог остановлен 🤧',
                                reply_markup=types.ReplyKeyboardRemove())
+        await show_chat_roll_adv(friend_id, message.from_user.id)
         await bot.send_message(chat_id=friend_id, text='📝Оцените собеседника',
                                reply_markup=chat_likes_kb(message.from_user.id))
         await bot.send_message(chat_id=message.from_user.id, text='📝Оцените собеседника',
@@ -81,10 +82,10 @@ async def start_menu(call: types.CallbackQuery):
         grow_chat_karma_db(score=1, tg_id=int(friend_id))
         await call.message.edit_text(text='📝Оцените собеседника',
                                      reply_markup=chat_likes_kb(tg_id=int(friend_id), status=False))
-        await call.message.answer("Спасибо за оценку!")
+        await call.message.answer("Спасибо за оценку!", reply_markup=main_user_kb())
     elif call_text.startswith('markchat_bad_'):
         grow_chat_karma_db(score=-1, tg_id=int(friend_id))
-        await call.message.answer("Спасибо за оценку!")
+        await call.message.answer("Спасибо за оценку!", reply_markup=main_user_kb())
         await call.message.edit_text(text='📝Оцените собеседника',
                                      reply_markup=chat_likes_kb(tg_id=int(friend_id), status=False))
     else:

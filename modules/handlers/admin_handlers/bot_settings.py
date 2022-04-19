@@ -2,8 +2,9 @@ from aiogram import types
 from modules.handlers.handlers_func import edit_text_call
 from main import dp
 from modules.keyboards import admins_settings_kb, close_it, confirm, user_couples_adv_kb, admins_settings_adv_only, \
-    admins_settings_adv_chat
-from modules.sql_func import count_all, update_adv_db, read_by_name, update_db
+    admins_settings_adv_chat, remove_adv
+from modules.sql_func import count_all, update_adv_db, read_by_name, update_db, read_all_2, new_adv, read_adv, \
+    delete_line_in_table
 from modules.dispatcher import Admin, AdminSettings
 
 
@@ -167,6 +168,7 @@ async def start_menu(call: types.CallbackQuery):
     await AdminSettings.start.set()
 
 
+@dp.callback_query_handler(state=AdminSettings.chat_roll_add_adv, text='close_it')
 @dp.callback_query_handler(state=AdminSettings.start, text='admin_setings_adv_chat_roll')
 async def start_menu(call: types.CallbackQuery):
     await edit_text_call(call=call, text='📺Реклама в "Чат рулетке"',
@@ -191,24 +193,52 @@ async def start_menu(call: types.CallbackQuery):
 # Adv for MANS
 @dp.callback_query_handler(state=AdminSettings.chat_roll_adv, text='admin_setings_adv_m')
 async def start_menu(call: types.CallbackQuery):
+    adv = read_adv(table='chat_adv', name='id, text', id_name='users_sex', id_data='men')
+    if str(adv) == '[]':
+        await call.message.edit_text('Рекламных постов пока что нет!')
+    else:
+        await call.message.edit_text('Вот последних 10 Рекламных постов. Нажмите если хотите удалить',
+                                     reply_markup=remove_adv(adv))
+
     update_db(table="fast_info", name="fast_1", data='men', id_data=call.from_user.id)
-    await edit_text_call(call=call, text=f'⚙️Настройка рекламы для чат рулетки\n'
-                                         f'Отправь мне текст рекламного поста для <b>парней!</b>',
-                         k_board=close_it())
+    await call.message.answer(text=f'⚙️Настройка рекламы для чат рулетки\nОтправь мне текст рекламного поста для '
+                                   f'<b>парней!</b>', reply_markup=close_it(), parse_mode='html')
     await AdminSettings.chat_roll_add_adv.set()
 
 
 # Adv for FEMALES
-@dp.callback_query_handler(state=AdminSettings.adv_start, text='admin_setings_adv_f')
+@dp.callback_query_handler(state=AdminSettings.chat_roll_adv, text='admin_setings_adv_f')
 async def start_menu(call: types.CallbackQuery):
+    adv = read_adv(table='chat_adv', name='id, text', id_name='users_sex',
+                   id_data='female')
+    if str(adv) == '[]':
+        await call.message.edit_text('Рекламных постов пока что нет!')
+    else:
+        await call.message.edit_text('Вот последних 10 Рекламных постов. Нажмите если хотите удалить',
+                                     reply_markup=remove_adv(adv))
+
     update_db(table="fast_info", name="fast_1", data='female', id_data=call.from_user.id)
-    await edit_text_call(call=call, text=f'⚙️Настройка рекламы\n'
-                                         f'Отправь мне текст рекламного поста для <b>девушек!</b>',
-                         k_board=close_it())
+    await call.message.answer(text=f'⚙️Настройка рекламы\n'
+                                   f'Отправь мне текст рекламного поста для <b>девушек!</b>',
+                              reply_markup=close_it(), parse_mode='html')
     await AdminSettings.chat_roll_add_adv.set()
+
+
+# Adv for FEMALES
+@dp.callback_query_handler(state=AdminSettings.chat_roll_add_adv, text_contains='delete_ad_')
+async def start_menu(call: types.CallbackQuery):
+    adv_id = call.data.split('delete_ad_')[1]
+    delete_line_in_table(data=adv_id)
+    await call.message.answer(text='📺Реклама в "Чат рулетке"',
+                              reply_markup=admins_settings_adv_chat())
+    await AdminSettings.chat_roll_adv.set()
 
 
 # Adv. Receive ad photo
 @dp.message_handler(state=AdminSettings.chat_roll_add_adv)
 async def start_menu(message: types.Message):
+    sex = read_by_name(table='fast_info', name='fast_1', id_data=message.from_user.id)[0][0]
+    new_adv(sex=sex, text=message.text)
     await message.answer('Реклама добавлена')
+    await message.answer(text='📺Реклама в "Чат рулетке"', reply_markup=admins_settings_adv_chat())
+    await AdminSettings.chat_roll_adv.set()

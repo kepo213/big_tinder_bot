@@ -5,7 +5,8 @@ import logging
 from modules.functions.simple_funcs import start_reffs
 from modules.handlers.handlers_func import edit_text_call
 from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table, likes_table, adv_table, \
-    update_db, create_fast_info_table, constants_table, read_all, photo_table, reffs_table, presents_table, chat_roll_table
+    update_db, create_fast_info_table, constants_table, read_all, photo_table, reffs_table, presents_table, \
+    chat_roll_table, chat_adv_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
 from modules.dispatcher import bot, Admin, User, AdminSettings
 from aiogram.dispatcher import FSMContext
@@ -68,6 +69,7 @@ async def start_menu(message: types.Message):
     constants_table()
     likes_table()
     adv_table()
+    chat_adv_table()
     chat_roll_table()
     presents_table()
     photo_table()

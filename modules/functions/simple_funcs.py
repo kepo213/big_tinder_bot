@@ -2,7 +2,7 @@ from aiogram import types
 from modules.dispatcher import bot
 from modules.keyboards import start_user_kb
 from modules.sql_func import insert_user, reff_user, read_by_name, update_db, grow_balls_db, chat_score_join, \
-    read_all_3, read_all_2
+    read_all_3, read_all_2, read_adv, get_ad_by_sex
 
 
 def update_age_period(tg_ig: int, age: int):
@@ -181,7 +181,6 @@ def likes_one_details_inform(call_data: str, user_id: int):
 
 
 def likes_one_delete_inform(call_data: str, user_id: int):
-    print(call_data)
     if str(call_data) == 'user_you_likes':
         all_likes_from_me = read_all_2(name='id', id_name='from_tg_id', id_data=user_id,
                                        id_name2='status_from', id_data2='active', table='likes')
@@ -215,3 +214,29 @@ def likes_one_delete_inform(call_data: str, user_id: int):
 
     else:
         pass
+
+
+async def send_chat_roll_ad(user_id: int):
+    # Check have bot any AD in database:
+    user_sex = read_by_name(table='fast_info', name="user_sex", id_data=user_id)[0][0]
+    lust_ad_number = read_by_name(table='chat_roll', name="lust_adv", id_name='tg_id', id_data=user_id)[0][0]
+    adv = get_ad_by_sex(sex=user_sex, lust_ad_id=lust_ad_number)
+    if str(adv) == '[]':
+        update_db(table='chat_roll', name="lust_adv", data=0, id_data=user_id)
+        adv = get_ad_by_sex(sex=user_sex, lust_ad_id=0)
+        if str(adv) == '[]':
+            return
+        else:
+            await bot.send_message(chat_id=user_id, text=adv[0][1], parse_mode='html', disable_web_page_preview=True)
+    else:
+        update_db(table='chat_roll', name="lust_adv", data=adv[0][0], id_data=user_id)
+        await bot.send_message(chat_id=user_id, text=adv[0][1], parse_mode='html', disable_web_page_preview=True)
+
+
+async def show_chat_roll_adv(user_id: int, friend_id: int):
+    # Check the on/off AD in chat_roll
+    show_adv = read_by_name(table='constants', name="chat_roll_adv", id_name='id', id_data=1)[0][0]
+    if int(show_adv) == 0:
+        return
+    await send_chat_roll_ad(user_id)
+    await send_chat_roll_ad(friend_id)

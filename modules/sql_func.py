@@ -125,7 +125,8 @@ def chat_roll_table():
              messages INTEGER DEFAULT 0,
              chats INTEGER DEFAULT 0,
              karma INTEGER DEFAULT 0,
-             friend_id BIGINT DEFAULT 0)''')
+             friend_id BIGINT DEFAULT 0,
+             lust_adv BIGINT DEFAULT 0)''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -273,6 +274,19 @@ def reff_user(tg_id: str, mentor_tg_id: str):
             cursor.execute(f"INSERT INTO reff (tg_id, mentor_tg_id, date) "
                            f"VALUES (%s, %s, %s) "
                            f"ON CONFLICT DO NOTHING;", (tg_id, mentor_tg_id, data_now))
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Добавляем данные новому пользователю
+def new_adv(sex: str, text: str):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"INSERT INTO chat_adv (users_sex, text) "
+                           f"VALUES (%s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (sex, text))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -456,6 +470,43 @@ def read_by_name(
 
 
 # Собираем все записи с фильтрацией по 1 параметру
+def read_adv(
+        id_data,
+        id_name: str = 'tg_id',
+        name: str = '*',
+        table: str = 'all_users'):
+    """
+    :rtype: tuple
+    """
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT {name} FROM {table} WHERE {id_name}='{id_data}' ORDER BY id DESC LIMIT 10")
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 1 параметру
+def get_ad_by_sex(sex: str, lust_ad_id: int):
+    """
+    :rtype: tuple
+    """
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT id, text FROM chat_adv WHERE users_sex = (%s) AND id > (%s)",
+                           (sex, lust_ad_id))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 1 параметру
 def count_chats():
     """
     :rtype: tuple
@@ -486,7 +537,7 @@ def search_person(
                            f"AND (user_age BETWEEN '{age_min}' AND '{age_max}') "
                            f"AND (id > {lust_id}) "
                            f"AND (user_sex = '{search_sex}') "
-                           f"AND (search_status = 1)")
+                           f"AND (search_status = 1) ORDER BY premium DESC")
             data = cursor.fetchall()
             return data
 
@@ -763,7 +814,7 @@ def join_chat_stata(id_data: int):
 
 
 # Удаляем строку в таблице
-def delete_line_in_table(data, table: str = 'all_categorys', name: str = 'id'):
+def delete_line_in_table(data, table: str = 'chat_adv', name: str = 'id'):
     global data_base
     try:
         with data_base.cursor() as cursor:

@@ -356,6 +356,14 @@ def close_it():
     return user_main
 
 
+def remove_adv(adv: tuple):
+    user_main = InlineKeyboardMarkup()
+    for ad in adv:
+        back = InlineKeyboardButton(text=f"❌ {ad[1]}", callback_data=f'delete_ad_{ad[0]}')
+        user_main.add(back)
+    return user_main
+
+
 # клавиатура для админа стартовая
 def confirm(without_back=False, without_yes=False):
     yes_all_good = InlineKeyboardButton(text=f'Да все хорошо!', callback_data=f'yes_all_good')

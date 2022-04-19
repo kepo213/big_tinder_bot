@@ -106,3 +106,4 @@ class UserChatRoll(StatesGroup):
     talk = State()
 
     score = State()
+    settings = State()

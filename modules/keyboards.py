@@ -24,9 +24,22 @@ def chat_roll():
     start_roll = KeyboardButton(text=f'💬 Запустить чат рулетку')
     my_stat = KeyboardButton(text=f'📈 Моя статистика')
     score = KeyboardButton(text=f'🏆 Рейтинг')
+    settings = KeyboardButton(text=f'⚙️ Настройки поиска')
     main_menu = KeyboardButton(text=f'🔙Главное меню')
     send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(start_roll, my_stat)
-    return send_geo_kb.add(score, main_menu)
+    send_geo_kb.add(score, settings)
+    return send_geo_kb.add(main_menu)
+
+
+def chat_settings():
+    guys = KeyboardButton(text=f'👨 Поиск среди парней')
+    girls = KeyboardButton(text=f'👩 Поиск среди девушек')
+    guys_and_girls = KeyboardButton(text=f'👨👩 Поиск среди всех')
+    main_menu = KeyboardButton(text=f'🔙Главное меню')
+    send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True).add(guys)
+    send_geo_kb.add(girls)
+    send_geo_kb.add(guys_and_girls)
+    return send_geo_kb.add(main_menu)
 
 
 def get_photo(close_it: bool = False):

@@ -68,10 +68,8 @@ async def fill_form(message: types.Message):
 async def fill_form(message: types.Message):
     if message.text.lower() == 'парень':
         update_db(table='fast_info', name='user_sex', data='men', id_data=message.from_user.id)
-        update_db(table='fast_info', name='search_sex', data='female', id_data=message.from_user.id)
     elif message.text.lower() == 'девушка':
         update_db(table='fast_info', name='user_sex', data='female', id_data=message.from_user.id)
-        update_db(table='fast_info', name='search_sex', data='men', id_data=message.from_user.id)
     else:
         await message.answer('Нажми на кнопку ниже!', reply_markup=user_sex_kb())
         return

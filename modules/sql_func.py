@@ -57,7 +57,7 @@ def create_fast_info_table():
              user_nickname TEXT DEFAULT '0',
              user_age BIGINT,
              user_sex TEXT,
-             search_sex TEXT,
+             search_sex TEXT DEFAULT 'all',
              city TEXT,
              longitude DOUBLE PRECISION,
              latitude DOUBLE PRECISION,
@@ -520,6 +520,29 @@ def join_chat_data(tg_id: int):
                            f"'{data_now}'::timestamp) AND "
                            f"(chat_roll.status = 1) AND "
                            f"(all_users.tg_id != (%s))", (tg_id,))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по интервалу дат
+def join_chat_data_sex(tg_id: int, sex: str):
+    global data_base
+    try:
+        data_now = datetime.datetime.now()
+        data_15 = data_now - datetime.timedelta(minutes=15)
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, chat_roll.status, fast_info.user_sex, all_users.activity FROM "
+                           f"((all_users INNER JOIN chat_roll ON all_users.tg_id = chat_roll.tg_id) "
+                           f"INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id) WHERE "
+                           f"(all_users.activity BETWEEN "
+                           f"'{data_15}'::timestamp AND "
+                           f"'{data_now}'::timestamp) AND "
+                           f"(chat_roll.status = 1) AND "
+                           f"(fast_info.user_sex = (%s)) AND "
+                           f"(all_users.tg_id != (%s))", (sex, tg_id))
             data = cursor.fetchall()
             return data
 

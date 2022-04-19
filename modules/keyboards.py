@@ -1,5 +1,4 @@
-
-from modules.sql_func import join_likes
+from modules.sql_func import join_likes, read_by_name
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -284,26 +283,60 @@ def user_settings_kb():
 def start_admin_kb():
     create_post = InlineKeyboardButton(text='📝 Разсылка 📝', callback_data='admin_sender')
     my_bot = InlineKeyboardButton(text='📊 Статистика пользователей 📊', callback_data='admin_stat')
-    posts = InlineKeyboardButton(text='⚙️ Настройки ⚙️', callback_data='admin_setings')
+    # posts = InlineKeyboardButton(text='⚙️ Настройки ⚙️', callback_data='admin_setings')
+    adv = InlineKeyboardButton(text='⚙️ Настройки рекламы ⚙️', callback_data='admin_adv_setings')
     inform = InlineKeyboardButton(text='👥 Зайти как user 👥', callback_data='admin_as_user')
     start_kb = InlineKeyboardMarkup().add(create_post)
     start_kb.add(my_bot)
-    start_kb.add(posts)
+    # start_kb.add(posts)
+    start_kb.add(adv)
     start_kb.add(inform)
     return start_kb
 
 
 def admins_settings_kb():
+    admin_setings_adv_couples = InlineKeyboardButton(text='📺Реклама в "Найти пару"',
+                                                     callback_data='admin_setings_adv_couples')
+    admin_setings_adv_chat_roll = InlineKeyboardButton(text='📺Реклама в "Чат рулетке"',
+                                                       callback_data='admin_setings_adv_chat_roll')
+    admin_settings_fake_people = InlineKeyboardButton(text='🌠Фэйковые анкеты',
+                                                      callback_data='admin_settings_fake_people')
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb = InlineKeyboardMarkup().add(admin_setings_adv_couples)
+    start_kb.add(admin_setings_adv_chat_roll)
+    start_kb.add(admin_settings_fake_people)
+    start_kb.add(back)
+    return start_kb
+
+
+def admins_settings_adv_only():
     admin_setings_adv_m = InlineKeyboardButton(text='📺🙎‍♂️ Реклама М', callback_data='admin_setings_adv_m')
     admin_setings_adv_f = InlineKeyboardButton(text='📺🙍🏻‍♀️ Реклама Ж', callback_data='admin_setings_adv_f')
     admin_setings_adv_number = InlineKeyboardButton(text='📺 Частота рекламы', callback_data='admin_setings_adv_number')
-    admin_setings_fake_number = InlineKeyboardButton(text='🌠Частота фэйковых анкет',
-                                                     callback_data='admin_settings_fake_number')
+    # admin_setings_fake_number = InlineKeyboardButton(text='🌠Частота фэйковых анкет',
+    #                                                  callback_data='admin_settings_fake_number')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     start_kb = InlineKeyboardMarkup().add(admin_setings_adv_m)
     start_kb.add(admin_setings_adv_f)
     start_kb.add(admin_setings_adv_number)
-    start_kb.add(admin_setings_fake_number)
+    # start_kb.add(admin_setings_fake_number)
+    start_kb.add(back)
+    return start_kb
+
+
+def admins_settings_adv_chat():
+    status = int(read_by_name(table='constants', name='chat_roll_adv', id_name='id', id_data=1)[0][0])
+    admin_setings_adv_m = InlineKeyboardButton(text='📺🙎‍♂️ Реклама М', callback_data='admin_setings_adv_m')
+    admin_setings_adv_f = InlineKeyboardButton(text='📺🙍🏻‍♀️ Реклама Ж', callback_data='admin_setings_adv_f')
+    if status == 0:
+        admin_setings_adv_number = InlineKeyboardButton(text='📺 Включить ✅', callback_data='admin_setings_chat_adv_on')
+    else:
+        admin_setings_adv_number = InlineKeyboardButton(text='📺 Отключить ❌', callback_data='admin_setings_chat_adv_off')
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb = InlineKeyboardMarkup().add(admin_setings_adv_m)
+    start_kb.add(admin_setings_adv_f)
+    start_kb.add(admin_setings_adv_number)
+    # start_kb.add(admin_setings_fake_number)
     start_kb.add(back)
     return start_kb
 

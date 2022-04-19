@@ -1,24 +1,34 @@
 from aiogram import types
 from modules.handlers.handlers_func import edit_text_call
 from main import dp
-from modules.keyboards import admins_settings_kb, close_it, confirm, user_couples_adv_kb
+from modules.keyboards import admins_settings_kb, close_it, confirm, user_couples_adv_kb, admins_settings_adv_only, \
+    admins_settings_adv_chat
 from modules.sql_func import count_all, update_adv_db, read_by_name, update_db
 from modules.dispatcher import Admin, AdminSettings
 
 
 # Main settings menu
-@dp.callback_query_handler(state=AdminSettings.adv_confirm, text='back')
-@dp.callback_query_handler(state=AdminSettings.adv_photo, text='close_it')
-@dp.callback_query_handler(state=AdminSettings.adv_url, text='close_it')
-@dp.callback_query_handler(state=AdminSettings.adv_text, text='close_it')
-@dp.callback_query_handler(state=AdminSettings.adv_number, text='close_it')
-@dp.callback_query_handler(state=Admin.start, text='admin_setings')
+@dp.callback_query_handler(state=AdminSettings.chat_roll_adv, text='back')
+@dp.callback_query_handler(state=AdminSettings.adv_start, text='back')
+@dp.callback_query_handler(state=Admin.start, text='admin_adv_setings')
 async def start_menu(call: types.CallbackQuery):
     await edit_text_call(call=call, text='⚙️Выберите что хотите поменять', k_board=admins_settings_kb())
     await AdminSettings.start.set()
 
 
-@dp.callback_query_handler(state=AdminSettings.start, text='admin_setings_adv_number')
+@dp.callback_query_handler(state=AdminSettings.adv_confirm, text='back')
+@dp.callback_query_handler(state=AdminSettings.adv_photo, text='close_it')
+@dp.callback_query_handler(state=AdminSettings.adv_url, text='close_it')
+@dp.callback_query_handler(state=AdminSettings.adv_text, text='close_it')
+@dp.callback_query_handler(state=AdminSettings.adv_number, text='close_it')
+@dp.callback_query_handler(state=AdminSettings.start, text='admin_setings_adv_couples')
+async def start_menu(call: types.CallbackQuery):
+    await edit_text_call(call=call, text=f'📺Реклама в "Найди пару"',
+                         k_board=admins_settings_adv_only())
+    await AdminSettings.adv_start.set()
+
+
+@dp.callback_query_handler(state=AdminSettings.adv_start, text='admin_setings_adv_number')
 async def start_menu(call: types.CallbackQuery):
     adv_number = read_by_name(table='constants', name='adv_number', id_name='id', id_data=1)[0][0]
     await edit_text_call(call=call, text=f'⚙️Настройки рекламы.\n'
@@ -61,7 +71,7 @@ async def start_menu(message: types.Message):
 
 
 # Adv for MANS
-@dp.callback_query_handler(state=AdminSettings.start, text='admin_setings_adv_m')
+@dp.callback_query_handler(state=AdminSettings.adv_start, text='admin_setings_adv_m')
 async def start_menu(call: types.CallbackQuery):
     fast_data = read_by_name(table='adv', name='users_sex, text, photo_id, btn_url', id_name='id',
                              id_data=1)[0]
@@ -79,7 +89,7 @@ async def start_menu(call: types.CallbackQuery):
 
 
 # Adv for FEMALES
-@dp.callback_query_handler(state=AdminSettings.start, text='admin_setings_adv_f')
+@dp.callback_query_handler(state=AdminSettings.adv_start, text='admin_setings_adv_f')
 async def start_menu(call: types.CallbackQuery):
     fast_data = read_by_name(table='adv', name='users_sex, text, photo_id, btn_url', id_name='id',
                              id_data=2)[0]
@@ -155,3 +165,50 @@ async def start_menu(call: types.CallbackQuery):
     await edit_text_call(call=call, text=f'🕶Реклама запущена')
     await call.message.answer(text='⚙️Выберите что хотите поменять', reply_markup=admins_settings_kb())
     await AdminSettings.start.set()
+
+
+@dp.callback_query_handler(state=AdminSettings.start, text='admin_setings_adv_chat_roll')
+async def start_menu(call: types.CallbackQuery):
+    await edit_text_call(call=call, text='📺Реклама в "Чат рулетке"',
+                         k_board=admins_settings_adv_chat())
+    await AdminSettings.chat_roll_adv.set()
+
+
+@dp.callback_query_handler(state=AdminSettings.chat_roll_adv, text='admin_setings_chat_adv_off')
+@dp.callback_query_handler(state=AdminSettings.chat_roll_adv, text='admin_setings_chat_adv_on')
+async def start_menu(call: types.CallbackQuery):
+    if call.data == 'admin_setings_chat_adv_off':
+        update_db(table='constants', name='chat_roll_adv', data=0, id_name='id', id_data=1)
+        await call.answer('Отключил ❌')
+    else:
+        update_db(table='constants', name='chat_roll_adv', data=1, id_name='id', id_data=1)
+        await call.answer('Включил ✅')
+    await edit_text_call(call=call, text='📺Реклама в "Чат рулетке"',
+                         k_board=admins_settings_adv_chat())
+    await AdminSettings.chat_roll_adv.set()
+
+
+# Adv for MANS
+@dp.callback_query_handler(state=AdminSettings.chat_roll_adv, text='admin_setings_adv_m')
+async def start_menu(call: types.CallbackQuery):
+    update_db(table="fast_info", name="fast_1", data='men', id_data=call.from_user.id)
+    await edit_text_call(call=call, text=f'⚙️Настройка рекламы для чат рулетки\n'
+                                         f'Отправь мне текст рекламного поста для <b>парней!</b>',
+                         k_board=close_it())
+    await AdminSettings.chat_roll_add_adv.set()
+
+
+# Adv for FEMALES
+@dp.callback_query_handler(state=AdminSettings.adv_start, text='admin_setings_adv_f')
+async def start_menu(call: types.CallbackQuery):
+    update_db(table="fast_info", name="fast_1", data='female', id_data=call.from_user.id)
+    await edit_text_call(call=call, text=f'⚙️Настройка рекламы\n'
+                                         f'Отправь мне текст рекламного поста для <b>девушек!</b>',
+                         k_board=close_it())
+    await AdminSettings.chat_roll_add_adv.set()
+
+
+# Adv. Receive ad photo
+@dp.message_handler(state=AdminSettings.chat_roll_add_adv)
+async def start_menu(message: types.Message):
+    await message.answer('Реклама добавлена')

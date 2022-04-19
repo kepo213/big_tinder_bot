@@ -160,7 +160,8 @@ def constants_table():
              media_id TEXT DEFAULT '0',
              k_board TEXT DEFAULT '0',
              adv_number BIGINT DEFAULT 6,
-             fake_post BIGINT DEFAULT 8
+             fake_post BIGINT DEFAULT 8,
+             chat_roll_adv BIGINT DEFAULT 1
              )''')
             data_base.commit()
             cursor.execute(f"INSERT INTO constants (id) "
@@ -193,6 +194,31 @@ def adv_table():
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f'''CREATE TABLE IF NOT EXISTS adv (
+             id SERIAL PRIMARY KEY,
+             users_sex TEXT DEFAULT '0',
+             text TEXT DEFAULT '0',
+             photo_id TEXT DEFAULT '0',
+             btn_url TEXT DEFAULT '0'
+             )''')
+            data_base.commit()
+            cursor.execute(f"INSERT INTO adv (id, users_sex) "
+                           f"VALUES (%s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (1, 'men'))
+            data_base.commit()
+            cursor.execute(f"INSERT INTO adv (id, users_sex) "
+                           f"VALUES (%s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (2, 'female'))
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Админ создает таблицу для рассылки
+def chat_adv_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS chat_adv (
              id SERIAL PRIMARY KEY,
              users_sex TEXT DEFAULT '0',
              text TEXT DEFAULT '0',
@@ -519,6 +545,7 @@ def join_chat_data(tg_id: int):
                            f"'{data_15}'::timestamp AND "
                            f"'{data_now}'::timestamp) AND "
                            f"(chat_roll.status = 1) AND "
+                           f"(chat_roll.karma > -10) AND "
                            f"(all_users.tg_id != (%s))", (tg_id,))
             data = cursor.fetchall()
             return data
@@ -541,6 +568,7 @@ def join_chat_data_sex(tg_id: int, sex: str):
                            f"'{data_15}'::timestamp AND "
                            f"'{data_now}'::timestamp) AND "
                            f"(chat_roll.status = 1) AND "
+                           f"(chat_roll.karma > -10) AND "
                            f"(fast_info.user_sex = (%s)) AND "
                            f"(all_users.tg_id != (%s))", (sex, tg_id))
             data = cursor.fetchall()

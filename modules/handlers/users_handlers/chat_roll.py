@@ -26,9 +26,26 @@ async def start_menu(message: types.Message):
 # Profile menu
 @dp.message_handler(Text(equals='💬 Запустить чат рулетку', ignore_case=True), state=UserChatRoll.start)
 async def start_menu(message: types.Message):
+    premium = read_by_name(table='fast_info', name='premium', id_data=message.from_user.id)[0][0]
+    karma = read_by_name(table='chat_roll', name='karma', id_data=message.from_user.id)[0][0]
+    if karma <= -10:
+        return await message.answer(f'Вам ограничен доступ к «Чат рулетке» по причине отрицательной кармы 😢\n'
+                                    f'<b>😭 Ваша карма: {karma}</b>\n'
+                                    f'<em>Не расстраивайтесь, вы можете обнулить свою карму пригласив 30 друзей. '
+                                    f'Ваша пригласительная ссылка: тут ссылка</em>', parse_mode='html')
+    elif -10 < karma < 0:
+        await message.answer(f'<b>😭 Ваша карма: {karma}</b>\n'
+                             f'<em>Ваша карма отрицательная, при достижении -10 вам будет ограничен доступ к '
+                             f'Чат-рулетке!</em>', parse_mode='html')
+    elif 0 < karma < 10:
+        await message.answer(f'<b>🙂 Ваша карма: {karma}</b>\n'
+                             f'<em>Вы хороший собеседник!</em>', parse_mode='html')
+    elif 10 < karma:
+        await message.answer(f'<b>😍 Ваша карма: {karma}</b>\n'
+                             f'<em>Вы хороший собеседник!</em>', parse_mode='html')
+
     update_db(table="chat_roll", name="status", data=1, id_data=message.from_user.id)
     await message.answer('Ищу собеседника... 🔍')
-    premium = read_by_name(table='fast_info', name='premium', id_data=message.from_user.id)[0][0]
     if int(premium) == 1:
         search_sex = read_by_name(table='fast_info', name='search_sex', id_data=message.from_user.id)[0][0]
         if str(search_sex) == 'all':

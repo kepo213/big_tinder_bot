@@ -28,6 +28,7 @@ class Admin(StatesGroup):
 
 class AdminSettings(StatesGroup):
     start = State()
+    adv_start = State()
     adv_number = State()
     fake_post_number = State()
 
@@ -35,6 +36,9 @@ class AdminSettings(StatesGroup):
     adv_url = State()
     adv_photo = State()
     adv_confirm = State()
+
+    chat_roll_adv = State()
+    chat_roll_add_adv = State()
 
 
 class AdminSender(StatesGroup):

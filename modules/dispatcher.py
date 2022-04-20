@@ -58,6 +58,14 @@ class AdminSettings(StatesGroup):
     delete = State()
 
 
+class AdminAutoSender(StatesGroup):
+    start = State()
+    new_post = State()
+    new_post_data = State()
+    new_post_text = State()
+    new_post_url = State()
+
+
 class AdminSender(StatesGroup):
     new_text_post = State()
     new_media = State()

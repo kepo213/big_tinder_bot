@@ -568,17 +568,19 @@ def count_chats():
 def search_person(
         x_left: float, x_right: float,
         y_up: float, y_down: float, search_sex: str, lust_id: int,
-        age_min: int, age_max: int):
+        age_min: int, age_max: int, status: str):
     global data_base
     try:
         with data_base.cursor() as cursor:
-            cursor.execute(f"SELECT id, tg_id, photo_id FROM fast_info WHERE "
-                           f"(longitude BETWEEN '{x_left}' AND '{x_right}') "
-                           f"AND (latitude BETWEEN '{y_down}' AND '{y_up}') "
-                           f"AND (user_age BETWEEN '{age_min}' AND '{age_max}') "
-                           f"AND (id > {lust_id}) "
-                           f"AND (user_sex = '{search_sex}') "
-                           f"AND (search_status = 1) ORDER BY premium DESC")
+            cursor.execute(f"SELECT fast_info.id, all_users.tg_id, fast_info.photo_id FROM fast_info "
+                           f"INNER JOIN all_users ON fast_info.tg_id = all_users.tg_id WHERE "
+                           f"(fast_info.longitude BETWEEN '{x_left}' AND '{x_right}') "
+                           f"AND (fast_info.latitude BETWEEN '{y_down}' AND '{y_up}') "
+                           f"AND (fast_info.user_age BETWEEN '{age_min}' AND '{age_max}') "
+                           f"AND (fast_info.id > {lust_id}) "
+                           f"AND (fast_info.user_sex = '{search_sex}') "
+                           f"AND (all_users.status = '{status}') "
+                           f"AND (fast_info.search_status = 1) ORDER BY fast_info.id")
             data = cursor.fetchall()
             return data
 

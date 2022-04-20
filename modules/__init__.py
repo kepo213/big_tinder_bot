@@ -6,6 +6,6 @@ from modules.handlers.users_handlers import help, profile_settings, my_profile, 
 from modules.handlers.users_handlers import compotibility, likes, chat_roll
 
 from modules.handlers.admin_handlers import admins_stat
-from modules.handlers.admin_handlers import admins_sender, bot_settings
+from modules.handlers.admin_handlers import admins_sender, bot_settings, bot_settings_sender
 
 from modules.handlers import all_state_handlers

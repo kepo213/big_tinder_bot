@@ -17,6 +17,7 @@ from modules.dispatcher import bot, Admin, AdminSettings
 
 
 # Main settings menu
+@dp.callback_query_handler(state=AdminSettings.fake_people, text='back')
 @dp.callback_query_handler(state=AdminSettings.chat_roll_adv, text='back')
 @dp.callback_query_handler(state=AdminSettings.adv_start, text='back')
 @dp.callback_query_handler(state=Admin.start, text='admin_adv_setings')
@@ -255,7 +256,7 @@ async def start_menu(message: types.Message):
 
 
 # _________
-# AD settings in chat_roll
+# Work with bots
 @dp.callback_query_handler(state=AdminSettings.create_bot, text='back')
 @dp.callback_query_handler(state=AdminSettings.start, text='admin_settings_fake_people')
 async def fake_people_start(call: types.CallbackQuery):
@@ -283,7 +284,8 @@ async def start_menu(call: types.CallbackQuery):
         new_id = int(bots[0][1]) + 2
     insert_first(table='bots', name='tg_id', data=new_id)
     insert_user(name='Anna', tg_id=f"{new_id}", user_nickname='0')
-    update_db(table='all_users', name='status', data='bot', id_data=new_id)
+    update_db(table="all_users", name="status", data="bot", id_data=new_id)
+    update_db(table="fast_info", name="search_range", data=0, id_data=new_id)
     await edit_text_call(call=call, text=f'🤖🙍 Новый бот\n'
                                          f'Отлично вы создали нового бота c id <b>{new_id}</b>\n'
                                          f'Для настройки перейдите в\n🤖🙍🏻‍♀️ Боты Просмотр 🙎‍♂️')
@@ -477,7 +479,6 @@ async def fill_form(message: types.Message):
         faces_number = search_face(file_name=file_name)
         if faces_number > 0:
             bot_id = read_by_name(table='fast_info', name='fast_1', id_data=message.from_user.id)[0][0]
-            update_db(name='status', data='active', id_data=bot_id)
             update_db(table='fast_info', name='photo_id', data=message.photo[-1].file_id, id_data=bot_id)
             await message.answer('Ваша фотография добавлена!', reply_markup=types.ReplyKeyboardRemove())
             # Send main profile text
@@ -665,7 +666,14 @@ async def start_menu(call: types.CallbackQuery):
 
 # Profile INSTAGRAM menu
 @dp.callback_query_handler(state=AdminSettings.delete, text='yes_all_good')
-async def start_menu(message: types.Message):
-    bot_id = read_by_name(table='fast_info', name='fast_1', id_data=message.from_user.id)[0][0]
-    delete_line_in_table(table='bot')
-    await fake_people_start()
+async def start_menu(call: types.CallbackQuery):
+    bot_id = read_by_name(table='fast_info', name='fast_1', id_data=call.from_user.id)[0][0]
+    delete_line_in_table(table='presents', name='tg_id', data=bot_id)
+    delete_line_in_table(table='likes', name='tg_id', data=bot_id)
+
+    delete_line_in_table(table='fast_info', name='tg_id', data=bot_id)
+    delete_line_in_table(table='couples', name='tg_id', data=bot_id)
+    delete_line_in_table(table='chat_roll', name='tg_id', data=bot_id)
+    delete_line_in_table(table='all_users', name='tg_id', data=bot_id)
+    delete_line_in_table(table='bots', name='tg_id', data=bot_id)
+    await fake_people_start(call)

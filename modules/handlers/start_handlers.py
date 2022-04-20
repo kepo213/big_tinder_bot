@@ -8,7 +8,7 @@ from modules.sql_func import insert_user, read_by_name, all_users_table, for_cou
     update_db, create_fast_info_table, constants_table, read_all, photo_table, reffs_table, presents_table, \
     chat_roll_table, chat_adv_table, bots_table
 from modules.handlers.admin_handlers.download_users import upload_all_data, upload_all_users_id
-from modules.dispatcher import bot, Admin, User, AdminSettings
+from modules.dispatcher import bot, Admin, User, AdminSettings, AdminAutoSender
 from aiogram.dispatcher import FSMContext
 from modules.keyboards import start_user_kb, start_admin_kb, main_user_kb
 
@@ -53,6 +53,7 @@ async def start_menu(call: types.CallbackQuery):
 
 
 # Start menu
+@dp.callback_query_handler(state=AdminAutoSender.start, text='back')
 @dp.callback_query_handler(state=AdminSettings.start, text='back')
 async def start_menu(call: types.CallbackQuery):
     await edit_text_call(text='Привет админ', k_board=start_admin_kb(), call=call)
@@ -105,6 +106,26 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 async def start_menu(message: types.Message):
     await message.answer(f'Твой {message.from_user.id}\n'
                          f'Чат {message.chat.id}')
+
+
+# Set admin
+@dp.message_handler(commands=['ban'], state='*')
+async def start_menu(message: types.Message):
+    ban_id = message.text.split(' ')[1]
+    # Обновляем данные пользователя в базе данных
+    user_data = read_by_name(id_data=message.from_user.id)
+    if user_data[0][3] == 'admin':
+        victem_data = read_by_name(id_data=ban_id)
+        if str(victem_data) == '[]':
+            await message.answer(f'Такого пользователя нет!', parse_mode='html')
+        elif victem_data[0][3] == 'active':
+            update_db(table="all_users", name="status", data="ban", id_data=ban_id)
+            update_db(table="chat_roll", name="karma", data=-50, id_data=ban_id)
+            await message.answer(f'Пользователь с id: <b>{ban_id}</b> за банен!', parse_mode='html')
+        elif victem_data[0][3] == 'ban':
+            update_db(table="all_users", name="status", data="active", id_data=ban_id)
+            update_db(table="chat_roll", name="karma", data=0, id_data=ban_id)
+            await message.answer(f'Пользователь с id: <b>{ban_id}</b> РАЗ банен!', parse_mode='html')
 
 
 # Get users

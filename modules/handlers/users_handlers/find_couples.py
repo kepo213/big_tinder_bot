@@ -75,22 +75,20 @@ def find_person(user_id: int):
         search_sex = 'female'
     else:
         search_sex = 'men'
-    finded_user = (search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left,
+    finded_user = (search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left, status='active',
                                  search_sex=search_sex, lust_id=lust_couple_id, age_min=age_min, age_max=age_max))
-    # print(finded_user)
     if str(finded_user) == '[]':
-        finded_user = search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left,
+        finded_user = search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left, status='active',
                                     search_sex=search_sex, lust_id=0, age_min=age_min, age_max=age_max)
-        update_db(table='couples', name='lust_couple_id', data=0, id_data=user_id)
-    else:
-        update_db(table='couples', name='lust_couple_id', data=finded_user[0][0], id_data=user_id)
+
     # Окончательная проверка
     if str(finded_user) == '[]':
+        update_db(table='couples', name='lust_couple_id', data=0, id_data=user_id)
         return False, False, False
     else:
+        update_db(table='couples', name='lust_couple_id', data=finded_user[0][0], id_data=user_id)
         finded_user_id = finded_user[0][1]
         photo_id = finded_user[0][2]
-
         text = create_text(int(finded_user_id), premium_finder=user_data[4])
     return finded_user_id, text, photo_id
 

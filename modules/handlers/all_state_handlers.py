@@ -135,9 +135,11 @@ async def show_next_profile(call: types.CallbackQuery):
 @dp.callback_query_handler(state='*', text_contains='couple_yes_')
 async def start_menu(call: types.CallbackQuery):
     user_id = call.data.split('_')[2]
+    status = read_by_name(name='status', id_data=user_id)[0][0]
     await call.answer(text='💚 Like')
-    await bot.send_message(text='Вас лайкнули показать кто?', chat_id=user_id,
-                           reply_markup=user_like_like_adv_kb(call.from_user.id))
+    if status != 'bot':
+        await bot.send_message(text='Вас лайкнули показать кто?', chat_id=user_id,
+                               reply_markup=user_like_like_adv_kb(call.from_user.id))
     await show_next_profile(call)
     user_data_1 = read_all_2(name='id', id_name='from_tg_id', id_data=call.from_user.id,
                              id_name2='tg_id', id_data2=int(user_id), table='likes')
@@ -191,6 +193,9 @@ async def present_shat(call: types.CallbackQuery):
                                     f'<a href="tg://user?id={call.from_user.id}">{my_user_name}</a>', chat_id=user_id,
                                parse_mode='html')
     else:
-        await bot.send_message(text=f'К вашему диалогу купил доступ пользователь '
-                                    f'<a href="https://t.me/{call.from_user.username}">{my_user_name}</a>',
-                               chat_id=user_id, parse_mode='html')
+        status = read_by_name(name='status', id_data=user_id)[0][0]
+        await call.answer(text='💚 Like')
+        if status != 'bot':
+            await bot.send_message(text=f'К вашему диалогу купил доступ пользователь '
+                                        f'<a href="https://t.me/{call.from_user.username}">{my_user_name}</a>',
+                                   chat_id=user_id, parse_mode='html')

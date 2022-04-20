@@ -286,16 +286,36 @@ def user_settings_kb():
 
 
 def start_admin_kb():
-    create_post = InlineKeyboardButton(text='📝 Разсылка 📝', callback_data='admin_sender')
+    create_post = InlineKeyboardButton(text='📝 Рассылка 📝', callback_data='admin_sender')
     my_bot = InlineKeyboardButton(text='📊 Статистика пользователей 📊', callback_data='admin_stat')
-    # posts = InlineKeyboardButton(text='⚙️ Настройки ⚙️', callback_data='admin_setings')
     adv = InlineKeyboardButton(text='⚙️ Настройки рекламы ⚙️', callback_data='admin_adv_setings')
+    auto_sender = InlineKeyboardButton(text='📝🤖 Авто рассылка', callback_data='auto_sender')
     inform = InlineKeyboardButton(text='👥 Зайти как user 👥', callback_data='admin_as_user')
     start_kb = InlineKeyboardMarkup().add(create_post)
     start_kb.add(my_bot)
-    # start_kb.add(posts)
     start_kb.add(adv)
+    start_kb.add(auto_sender)
     start_kb.add(inform)
+    return start_kb
+
+
+def smart_sender():
+    create_post = InlineKeyboardButton(text='📝 Новый пост ✈️', callback_data='new_post')
+    adv = InlineKeyboardButton(text='✈️📝 Все посты рассылки', callback_data='admin_smart_sender')
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb = InlineKeyboardMarkup().add(create_post)
+    start_kb.add(adv)
+    start_kb.add(back)
+    return start_kb
+
+
+def smart_sender_post_type():
+    create_post = InlineKeyboardButton(text='Отсчет от регистрации', callback_data='new_post_first_reg')
+    adv = InlineKeyboardButton(text='От последней активности', callback_data='new_post_lust_active')
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb = InlineKeyboardMarkup().add(create_post)
+    start_kb.add(adv)
+    start_kb.add(back)
     return start_kb
 
 

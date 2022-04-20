@@ -1,4 +1,4 @@
-from modules.sql_func import join_likes, read_by_name
+from modules.sql_func import join_likes, read_by_name, join_get_bot
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
@@ -203,7 +203,7 @@ def users_score_kb():
     return start_kb
 
 
-def user_profile_kb(status: int, photo: int):
+def user_profile_kb(status: int, photo: int, delete: bool = False):
     profile_name = InlineKeyboardButton(text='👤 Имя', callback_data='profile_name')
     profile_age = InlineKeyboardButton(text='🔞 Возраст', callback_data='profile_age')
     profile_sex = InlineKeyboardButton(text='🚻 Пол:', callback_data='profile_sex')
@@ -228,10 +228,15 @@ def user_profile_kb(status: int, photo: int):
     start_kb.add(profile_city, profile_photo, profile_about)
     start_kb.add(profile_emoji, profile_zodiac, profile_insta)
     start_kb.add(profile_close)
-    if photo == 0:
-        start_kb.add(profile_good)
+    if delete:
+        profile_good = InlineKeyboardButton(text='Подтвердить фото', callback_data='profile_good')
+        delete_bot = InlineKeyboardButton(text='❌🗑 Удалить бот 🤖', callback_data='delete_bot')
+        start_kb.add(delete_bot, profile_good)
     else:
-        pass
+        if photo == 0:
+            start_kb.add(profile_good)
+        else:
+            pass
     return start_kb
 
 
@@ -341,6 +346,23 @@ def admins_settings_adv_chat():
     return start_kb
 
 
+def admins_fake_people():
+    status = int(read_by_name(table='constants', name='fake_post', id_name='id', id_data=1)[0][0])
+    admin_setings_adv_f = InlineKeyboardButton(text='🤖🙍🏻‍♀️ Боты Просмотр 🙎‍♂️', callback_data='admin_bot_work')
+    new_bot = InlineKeyboardButton(text='🤖🙍 Новый бот', callback_data='new_bot')
+    if status == 0:
+        admin_setings_adv_number = InlineKeyboardButton(text='🤖 Включить боты ✅', callback_data='admin_bot_on')
+    else:
+        admin_setings_adv_number = InlineKeyboardButton(text='🤖 Отключить боты ❌', callback_data='admin_bot_off')
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(admin_setings_adv_f)
+    start_kb.add(new_bot)
+    start_kb.add(admin_setings_adv_number)
+    start_kb.add(back)
+    return start_kb
+
+
 # отправка в рассылке без медиа
 def without_media():
     back = InlineKeyboardButton(text=f'Пропустить', callback_data=f'no_data')
@@ -360,6 +382,16 @@ def remove_adv(adv: tuple):
     user_main = InlineKeyboardMarkup()
     for ad in adv:
         back = InlineKeyboardButton(text=f"❌ {ad[1]}", callback_data=f'delete_ad_{ad[0]}')
+        user_main.add(back)
+    return user_main
+
+
+def admin_bots(bots: tuple):
+    user_main = InlineKeyboardMarkup()
+    for bot in bots:
+        bot_data = join_get_bot(bot[1])[0]
+        back = InlineKeyboardButton(text=f"{bot_data[0]},{bot_data[1]},{bot_data[2]},{bot_data[3]},{bot_data[4]}",
+                                    callback_data=f'admin_bot_{bot[1]}')
         user_main.add(back)
     return user_main
 

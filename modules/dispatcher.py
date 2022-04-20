@@ -40,6 +40,23 @@ class AdminSettings(StatesGroup):
     chat_roll_adv = State()
     chat_roll_add_adv = State()
 
+    fake_people = State()
+    create_bot = State()
+    work_with_bot = State()
+    change_bot = State()
+
+    name = State()
+    age = State()
+    sex = State()
+    city = State()
+    photo = State()
+    about = State()
+    emoji = State()
+    zodiac = State()
+    Instagram = State()
+    confirm_photo = State()
+    delete = State()
+
 
 class AdminSender(StatesGroup):
     new_text_post = State()

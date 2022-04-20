@@ -55,10 +55,10 @@ def create_fast_info_table():
              id SERIAL PRIMARY KEY,
              tg_id BIGINT UNIQUE,
              user_nickname TEXT DEFAULT '0',
-             user_age BIGINT,
-             user_sex TEXT,
+             user_age BIGINT DEFAULT 18,
+             user_sex TEXT DEFAULT 'female',
              search_sex TEXT DEFAULT 'all',
-             city TEXT,
+             city TEXT DEFAULT 'Москва',
              longitude DOUBLE PRECISION,
              latitude DOUBLE PRECISION,
              photo_id TEXT DEFAULT '0',
@@ -161,7 +161,7 @@ def constants_table():
              media_id TEXT DEFAULT '0',
              k_board TEXT DEFAULT '0',
              adv_number BIGINT DEFAULT 6,
-             fake_post BIGINT DEFAULT 8,
+             fake_post BIGINT DEFAULT 1,
              chat_roll_adv BIGINT DEFAULT 1
              )''')
             data_base.commit()
@@ -184,6 +184,19 @@ def reffs_table():
              mentor_tg_id BIGINT DEFAULT '0',
              date timestamp
              )''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Админ создает таблицу для рассылки
+def bots_table():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS bots (
+             id SERIAL PRIMARY KEY,
+             tg_id BIGINT UNIQUE)''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -287,6 +300,19 @@ def new_adv(sex: str, text: str):
             cursor.execute(f"INSERT INTO chat_adv (users_sex, text) "
                            f"VALUES (%s, %s) "
                            f"ON CONFLICT DO NOTHING;", (sex, text))
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Добавляем данные новому пользователю
+def insert_first(table: str, name: str, data):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"INSERT INTO {table} ({name}) "
+                           f"VALUES (%s) "
+                           f"ON CONFLICT DO NOTHING;", (data,))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -400,6 +426,21 @@ def read_all(
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f'SELECT {name} FROM {table}')
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Читаем все данные из базы данных
+def read_all_order(
+        name: str = '*',
+        table: str = 'all_users'):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'SELECT {name} FROM {table} ORDER BY id DESC')
             data = cursor.fetchall()
             return data
 
@@ -622,6 +663,22 @@ def join_chat_data_sex(tg_id: int, sex: str):
                            f"(chat_roll.karma > -10) AND "
                            f"(fast_info.user_sex = (%s)) AND "
                            f"(all_users.tg_id != (%s))", (sex, tg_id))
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по интервалу дат
+def join_get_bot(tg_id: int):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, all_users.user_name, fast_info.user_sex, fast_info.user_age, "
+                           f"fast_info.city FROM "
+                           f"all_users INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id "
+                           f"WHERE all_users.tg_id = (%s)", (tg_id,))
             data = cursor.fetchall()
             return data
 

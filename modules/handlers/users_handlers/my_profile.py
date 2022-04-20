@@ -65,16 +65,18 @@ def settings_text(user_id: int):
     return text, photo_id
 
 
-async def send_main_text(user_id: int):
+async def send_main_text(user_id: int, chat_id: int = None, delete=False):
     data = read_by_name(table='fast_info', name='search_status, photo_good', id_data=user_id)[0]
     status = int(data[0])
     photo = int(data[1])
     text, photo_id = settings_text(user_id)
+    if chat_id is None:
+        chat_id = user_id
     try:
-        await bot.send_photo(caption=text, photo=photo_id, chat_id=user_id,
-                             reply_markup=user_profile_kb(status, photo), parse_mode='html')
+        await bot.send_photo(caption=text, photo=photo_id, chat_id=chat_id,
+                             reply_markup=user_profile_kb(status, photo, delete=delete), parse_mode='html')
     except:
-        await bot.send_message(text=text, chat_id=user_id,
+        await bot.send_message(text=text, chat_id=chat_id,
                                reply_markup=user_profile_kb(status, photo), parse_mode='html')
     await UserProfile.start.set()
 

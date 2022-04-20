@@ -3,7 +3,6 @@ from main import dp
 from aiogram.dispatcher.filters import Text
 
 from modules.dispatcher import bot, UserChatRoll
-from modules.handlers.users_handlers.find_couples import show_other_profile
 from modules.keyboards import chat_roll, chat_roll_start, users_score_kb, chat_settings
 from modules.sql_func import update_db, read_by_name, search_person, join_profile_all, read_all_2, \
     insert_likes_presents_db, join_chat_stata, count_refs_for_chats, join_chat_data, grow_chat_chats_db, count_chats, \

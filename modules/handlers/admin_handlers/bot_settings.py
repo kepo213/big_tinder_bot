@@ -677,3 +677,17 @@ async def start_menu(call: types.CallbackQuery):
     delete_line_in_table(table='all_users', name='tg_id', data=bot_id)
     delete_line_in_table(table='bots', name='tg_id', data=bot_id)
     await fake_people_start(call)
+
+
+# Create new bot
+@dp.callback_query_handler(state=AdminSettings.fake_people, text='admin_bot_off')
+@dp.callback_query_handler(state=AdminSettings.fake_people, text='admin_bot_on')
+async def start_menu(call: types.CallbackQuery):
+    status = int(read_by_name(table='constants', name='fake_post', id_name='id', id_data=1)[0][0])
+    if status == 0:
+        update_db(table='constants', name='fake_post', data=1, id_name='id', id_data=1)
+    else:
+        update_db(table='constants', name='fake_post', data=0, id_name='id', id_data=1)
+    await edit_text_call(call=call, text='🌠Настройка Фэйковых анкет',
+                         k_board=admins_fake_people())
+    await AdminSettings.fake_people.set()

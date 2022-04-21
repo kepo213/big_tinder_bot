@@ -39,6 +39,12 @@ async def start_reffs(message: types.Message):
             await bot.send_message(chat_id=reff_user_id,
                                    text='По вашей ссылке только что зарегистрировался новый пользователь!')
             reff_user(tg_id=message.from_user.id, mentor_tg_id=reff_user_id)
+            all_users = read_by_name(table='reff', id_name='mentor_tg_id', id_data=message.from_user.id)
+            if len(all_users) == 29:
+                karma = read_by_name(table='chat_roll', name='karma', id_data=message.from_user.id)[0][0]
+                if int(karma) < 0:
+                    await bot.send_message(chat_id=reff_user_id,
+                                           text='Поздравляю это ваш 30 реферал. Ваша карма теперь 0')
             grow_balls_db(data=reff_user_id)
         else:
             pass

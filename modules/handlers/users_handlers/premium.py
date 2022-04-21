@@ -5,9 +5,8 @@ from aiogram.dispatcher.filters import Text
 from modules.dispatcher import bot, UserPremium
 from modules.keyboards import reff_kb, user_profile_kb, close_it, get_geo, confirm, get_photo, zodiac_kb, \
     user_verifikation_kb
-from modules.sql_func import update_db, read_by_name, join_reff_block, join_reff_premium, join_reff_photo
+from modules.sql_func import read_by_name, join_reff_block, join_reff_premium, join_reff_photo
 from modules.handlers.handlers_func import edit_text_call
-from modules.functions.simple_funcs import update_age_period
 
 
 # Reff menu

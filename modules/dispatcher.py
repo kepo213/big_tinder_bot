@@ -64,7 +64,12 @@ class AdminAutoSender(StatesGroup):
     new_post_sex = State()
     new_post_data = State()
     new_post_text = State()
+    new_post_photo = State()
     new_post_url = State()
+
+    show_posts = State()
+    delete_posts = State()
+    delete_post_confirm = State()
 
 
 class AdminSender(StatesGroup):

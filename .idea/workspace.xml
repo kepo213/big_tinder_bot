@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6f4e7bdf-980b-42de-80c1-762f8d52ad0a" name="Changes" comment="Start working on smart sender">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/smart_sender.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/12-big_tinder_bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/12-big_tinder_bot.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/dispatcher.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/dispatcher.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/functions/simple_funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/functions/simple_funcs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings_sender.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings_sender.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/users_handlers/premium.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/users_handlers/premium.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/keyboards.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/keyboards.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/sql_func.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/sql_func.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="27NbUonvaSx9kNSiCMGWXX875M7" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\IT\Python_3\Free_lanc\GIT\12-big_tinder_bot\modules\functions" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.smart_sender">
+    <configuration name="check_photo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="12-big_tinder_bot" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/modules/functions" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/modules/functions/check_photo.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="12-big_tinder_bot" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="smart_sender" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="12-big_tinder_bot" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/smart_sender.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.smart_sender" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.check_photo" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6f4e7bdf-980b-42de-80c1-762f8d52ad0a" name="Changes" comment="" />
+      <created>1649163508677</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1649163508677</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Create help menu">
+      <created>1649165422846</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1649165422846</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Create help menu and compotibility">
+      <created>1649339530665</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1649339530665</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Create help menu and compotibility">
+      <created>1649484683611</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1649484683611</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Create reff system.">
+      <created>1649680709515</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1649680709515</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Start working on find couple">
+      <created>1649685265352</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1649685265352</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Start working on find couple">
+      <created>1649685278535</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1649685278535</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Continue working on find couple">
+      <created>1649763297899</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1649763297899</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Continue working on likes">
+      <created>1649929925343</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1649929925343</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Continue working with sender">
+      <created>1650287773791</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1650287773791</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Add chat_roll ad">
+      <created>1650350784544</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1650350784544</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Add chat_roll ad">
+      <created>1650387688105</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1650387688106</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Start working on smart sender">
+      <created>1650462540568</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1650462540568</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Create help menu" />
+    <MESSAGE value="Create help menu and compotibility" />
+    <MESSAGE value="Create reff system." />
+    <MESSAGE value="Start working on find couple" />
+    <MESSAGE value="Continue working on find couple" />
+    <MESSAGE value="Continue working on likes" />
+    <MESSAGE value="Continue working with sender" />
+    <MESSAGE value="Add chat_roll ad" />
+    <MESSAGE value="Start working on smart sender" />
+    <option name="LAST_COMMIT_MESSAGE" value="Start working on smart sender" />
+  </component>
+</project>

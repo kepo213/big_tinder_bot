@@ -160,6 +160,13 @@ def user_couples_adv_kb(url: str):
     return start_kb
 
 
+def smart_sender_post_kb(name: str, url: str):
+    yes = InlineKeyboardButton(text=name, url=url)
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(yes)
+    return start_kb
+
+
 def user_like_like_adv_kb(user_id: int):
     yes = InlineKeyboardButton(text='👍 покажи', callback_data=f'couple_double_yes_{user_id}')
     no = InlineKeyboardButton(text='👎 пропустить', callback_data=f'couple_double_no')
@@ -309,6 +316,15 @@ def smart_sender():
     return start_kb
 
 
+def delete_smart_sender_post():
+    delete = InlineKeyboardButton(text='❌📝 Удалить пост', callback_data=f'delete_smart_sender')
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    start_kb = InlineKeyboardMarkup()
+    start_kb.add(delete)
+    start_kb.add(back)
+    return start_kb
+
+
 def smart_sender_post_type():
     create_post = InlineKeyboardButton(text='Отсчет от регистрации', callback_data='new_post_first_reg')
     adv = InlineKeyboardButton(text='От последней активности', callback_data='new_post_lust_active')
@@ -325,6 +341,16 @@ def pick_sex():
     start_kb = InlineKeyboardMarkup().add(create_post)
     start_kb.add(adv)
     return start_kb
+
+
+def show_all_posts(posts: tuple):
+    start_kb = InlineKeyboardMarkup()
+    for post in posts:
+        btn_post = InlineKeyboardButton(text=f'{post[0]}.{post[1][0:20]}. дни-{post[4]}.{post[6]}',
+                                        callback_data=f'smart_post_{post[0]}')
+        start_kb.add(btn_post)
+    back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
+    return start_kb.add(back)
 
 
 def admins_settings_kb():
@@ -346,13 +372,10 @@ def admins_settings_adv_only():
     admin_setings_adv_m = InlineKeyboardButton(text='📺🙎‍♂️ Реклама М', callback_data='admin_setings_adv_m')
     admin_setings_adv_f = InlineKeyboardButton(text='📺🙍🏻‍♀️ Реклама Ж', callback_data='admin_setings_adv_f')
     admin_setings_adv_number = InlineKeyboardButton(text='📺 Частота рекламы', callback_data='admin_setings_adv_number')
-    # admin_setings_fake_number = InlineKeyboardButton(text='🌠Частота фэйковых анкет',
-    #                                                  callback_data='admin_settings_fake_number')
     back = InlineKeyboardButton(text=f'🔙 Назад', callback_data=f'back')
     start_kb = InlineKeyboardMarkup().add(admin_setings_adv_m)
     start_kb.add(admin_setings_adv_f)
     start_kb.add(admin_setings_adv_number)
-    # start_kb.add(admin_setings_fake_number)
     start_kb.add(back)
     return start_kb
 
@@ -369,7 +392,6 @@ def admins_settings_adv_chat():
     start_kb = InlineKeyboardMarkup().add(admin_setings_adv_m)
     start_kb.add(admin_setings_adv_f)
     start_kb.add(admin_setings_adv_number)
-    # start_kb.add(admin_setings_fake_number)
     start_kb.add(back)
     return start_kb
 

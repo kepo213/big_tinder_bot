@@ -76,7 +76,8 @@ def create_fast_info_table():
              fast_1 TEXT DEFAULT '0',
              fast_2 TEXT DEFAULT '0',
              fast_3 TEXT DEFAULT '0',
-             fast_4 TEXT DEFAULT '0')''')
+             fast_4 TEXT DEFAULT '0',
+             fast_5 TEXT DEFAULT '0')''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -201,7 +202,9 @@ def smart_sender():
              btn_url TEXT DEFAULT '0',
              days BIGINT DEFAULT 0,
              type TEXT DEFAULT '0',
-             sex TEXT DEFAULT 'men'
+             sex TEXT DEFAULT 'men',
+             photo_id TEXT DEFAULT '0',
+             lust_check timestamp
              )''')
             data_base.commit()
     except Exception as _ex:
@@ -338,13 +341,14 @@ def insert_first(table: str, name: str, data):
 
 
 # Добавляем данные новому пользователю
-def new_smart_sener(text: str, btn_name: str, btn_url: str, days: int, post_type: str, sex: str):
+def new_smart_sener(text: str, btn_name: str, btn_url: str, days: int, post_type: str, sex: str, photo_id: str):
     global data_base
     try:
+        lust_date = datetime.datetime.now()
         with data_base.cursor() as cursor:
-            cursor.execute(f"INSERT INTO smart_sender (text, btn_name, btn_url, days, type, sex) "
-                           f"VALUES (%s, %s, %s, %s, %s, %s) "
-                           f"ON CONFLICT DO NOTHING;", (text, btn_name, btn_url, days, post_type, sex))
+            cursor.execute(f"INSERT INTO smart_sender (text, btn_name, btn_url, days, type, sex, photo_id, lust_check) "
+                           f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (text, btn_name, btn_url, days, post_type, sex, photo_id, lust_date))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -613,6 +617,25 @@ def search_person(
                            f"AND (fast_info.user_sex = '{search_sex}') "
                            f"AND (all_users.status = '{status}') "
                            f"AND (fast_info.search_status = 1) ORDER BY fast_info.id")
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 1 параметру
+def search_person_smart_sender(search_key: str,
+                               lust_seach: datetime.datetime, time_now: datetime.datetime,
+                               search_sex: str, ):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT all_users.tg_id, fast_info.user_sex FROM all_users "
+                           f"INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE "
+                           f"(fast_info.{search_key} BETWEEN '{lust_seach}' AND '{time_now}') "
+                           f"AND (fast_info.user_sex = '{search_sex}') "
+                           f"AND (all_users.status = 'active')")
             data = cursor.fetchall()
             return data
 

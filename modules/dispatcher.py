@@ -61,6 +61,7 @@ class AdminSettings(StatesGroup):
 class AdminAutoSender(StatesGroup):
     start = State()
     new_post = State()
+    new_post_sex = State()
     new_post_data = State()
     new_post_text = State()
     new_post_url = State()

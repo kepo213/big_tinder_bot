@@ -190,6 +190,25 @@ def reffs_table():
 
 
 # Админ создает таблицу для рассылки
+def smart_sender():
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f'''CREATE TABLE IF NOT EXISTS smart_sender (
+             id SERIAL PRIMARY KEY,
+             text TEXT DEFAULT '0',
+             btn_name TEXT DEFAULT '0',
+             btn_url TEXT DEFAULT '0',
+             days BIGINT DEFAULT 0,
+             type TEXT DEFAULT '0',
+             sex TEXT DEFAULT 'men'
+             )''')
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Админ создает таблицу для рассылки
 def bots_table():
     global data_base
     try:
@@ -313,6 +332,19 @@ def insert_first(table: str, name: str, data):
             cursor.execute(f"INSERT INTO {table} ({name}) "
                            f"VALUES (%s) "
                            f"ON CONFLICT DO NOTHING;", (data,))
+            data_base.commit()
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Добавляем данные новому пользователю
+def new_smart_sener(text: str, btn_name: str, btn_url: str, days: int, post_type: str, sex: str):
+    global data_base
+    try:
+        with data_base.cursor() as cursor:
+            cursor.execute(f"INSERT INTO smart_sender (text, btn_name, btn_url, days, type, sex) "
+                           f"VALUES (%s, %s, %s, %s, %s, %s) "
+                           f"ON CONFLICT DO NOTHING;", (text, btn_name, btn_url, days, post_type, sex))
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)

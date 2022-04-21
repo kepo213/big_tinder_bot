@@ -319,6 +319,14 @@ def smart_sender_post_type():
     return start_kb
 
 
+def pick_sex():
+    create_post = InlineKeyboardButton(text='Для парней', callback_data='for_mans')
+    adv = InlineKeyboardButton(text='Для девушек', callback_data='for_females')
+    start_kb = InlineKeyboardMarkup().add(create_post)
+    start_kb.add(adv)
+    return start_kb
+
+
 def admins_settings_kb():
     admin_setings_adv_couples = InlineKeyboardButton(text='📺Реклама в "Найти пару"',
                                                      callback_data='admin_setings_adv_couples')

@@ -223,7 +223,8 @@ async def start_menu(call: types.CallbackQuery):
         all_users = join_sender_sex('female')
     else:
         all_users = read_by_name(name='tg_id', id_name='status', id_data='active')
-    await start_sending(user_id=call.from_user.id, all_users=all_users)
+    all_users_admin = read_by_name(name='tg_id', id_name='status', id_data='admin')
+    await start_sending(user_id=call.from_user.id, all_users=all_users+all_users_admin)
 
 
 async def start_sending(user_id: int, all_users: tuple):

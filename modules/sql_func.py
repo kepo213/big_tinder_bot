@@ -633,9 +633,10 @@ def search_person_smart_sender(search_key: str,
         with data_base.cursor() as cursor:
             cursor.execute(f"SELECT all_users.tg_id, fast_info.user_sex FROM all_users "
                            f"INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id WHERE "
-                           f"(fast_info.{search_key} BETWEEN '{lust_seach}' AND '{time_now}') "
+                           f"(all_users.{search_key} BETWEEN '{lust_seach}' AND '{time_now}') "
                            f"AND (fast_info.user_sex = '{search_sex}') "
-                           f"AND (all_users.status = 'active')")
+                           f"AND ((all_users.status = 'active') "
+                           f"OR (all_users.status = 'admin'))")
             data = cursor.fetchall()
             return data
 
@@ -654,7 +655,8 @@ def search_persons_for_sender(
                            f"fast_info.tg_id = all_users.tg_id WHERE "
                            f"(fast_info.longitude BETWEEN '{x_left}' AND '{x_right}') "
                            f"AND (fast_info.latitude BETWEEN '{y_down}' AND '{y_up}') "
-                           f"AND (all_users.status = 'active')")
+                           f"AND ((all_users.status = 'active') "
+                           f"OR (all_users.status = 'admin'))")
             data = cursor.fetchall()
             return data
 
@@ -766,7 +768,7 @@ def join_sender_age(age_min: int, age_max: int):
         with data_base.cursor() as cursor:
             cursor.execute(f"SELECT all_users.tg_id, fast_info.user_age FROM "
                            f"all_users INNER JOIN fast_info ON all_users.tg_id = fast_info.tg_id "
-                           f"WHERE all_users.status = 'active' AND "
+                           f"WHERE ((all_users.status = 'active') OR (all_users.status = 'admin')) AND "
                            f"fast_info.user_age BETWEEN (%s) AND (%s)", (age_min, age_max))
             data = cursor.fetchall()
             return data

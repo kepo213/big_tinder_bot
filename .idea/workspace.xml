@@ -5,17 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f4e7bdf-980b-42de-80c1-762f8d52ad0a" name="Changes" comment="Start working on smart sender">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/smart_sender.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/12-big_tinder_bot.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/12-big_tinder_bot.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/dispatcher.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/dispatcher.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/functions/simple_funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/functions/simple_funcs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings_sender.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings_sender.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/handlers/users_handlers/premium.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/users_handlers/premium.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/keyboards.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/keyboards.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/admin_handlers/admins_sender.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/admin_handlers/admins_sender.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/sql_func.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/sql_func.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/smart_sender.py" beforeDir="false" afterPath="$PROJECT_DIR$/smart_sender.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,8 +120,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.smart_sender" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.smart_sender" />
         <item itemvalue="Python.check_photo" />
       </list>
     </recent_temporary>
@@ -226,7 +219,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650462540568</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Start working on smart sender">
+      <created>1650549220276</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1650549220276</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

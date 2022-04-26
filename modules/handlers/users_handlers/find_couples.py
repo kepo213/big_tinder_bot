@@ -1,3 +1,4 @@
+import datetime
 
 from aiogram import types
 from main import dp
@@ -9,7 +10,7 @@ from modules.keyboards import user_couples_kb, user_couples_adv_kb
 from modules.sql_func import update_db, read_by_name, search_person, join_profile_all
 
 
-def create_text(user_id: int, premium_finder: str, show_user_link: bool = True):
+def create_text(user_id: int, premium_finder: str):
     user_data = join_profile_all(id_data=user_id)[0]
 
     if str(user_data[7]) == "0":
@@ -48,10 +49,7 @@ def create_text(user_id: int, premium_finder: str, show_user_link: bool = True):
         description = ''
     else:
         description = f'📝{user_data[6]}\n'
-    if show_user_link:
-        name = f'<a href="tg://user?id={user_data[0]}">{user_data[1]}</a>'
-    else:
-        name = user_data[1]
+    name = user_data[1]
     age = user_data[2]
     # Собираем текст
     text = f'{emoji}{name}, {age} {premium}\n\n' \
@@ -63,7 +61,9 @@ def create_text(user_id: int, premium_finder: str, show_user_link: bool = True):
 def find_person(user_id: int):
     user_data = read_by_name(name='longitude, latitude, search_range, user_sex, premium, age_min, age_max',
                              id_data=user_id, table='fast_info')[0]
-    lust_couple_id = read_by_name(name='lust_couple_id', id_data=user_id, table='couples')[0][0]
+    couple_chat_data = read_by_name(name='lust_couple_id, lust_skip_list', id_data=user_id, table='couples')[0]
+    lust_couple_id = couple_chat_data[0]
+    lust_skip_list = couple_chat_data[1]
     # keep params for search
     y_up = float(user_data[0]) + 0.0089 * int(user_data[2])
     y_down = float(user_data[0]) - 0.0089 * int(user_data[2])
@@ -77,7 +77,9 @@ def find_person(user_id: int):
         search_sex = 'men'
     finded_user = (search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left, status='active',
                                  search_sex=search_sex, lust_id=lust_couple_id, age_min=age_min, age_max=age_max))
-    if str(finded_user) == '[]':
+    checker_lust_skip = datetime.datetime.now() - datetime.timedelta(days=1)
+    if str(finded_user) == '[]' and lust_skip_list < checker_lust_skip:
+        update_db(table='couples', name='lust_skip_list', data=datetime.datetime.now(), id_data=user_id)
         finded_user = search_person(x_left=y_down, x_right=y_up, y_up=x_right, y_down=x_left, status='active',
                                     search_sex=search_sex, lust_id=0, age_min=age_min, age_max=age_max)
 
@@ -102,7 +104,7 @@ def show_other_profile(user_id: int, user_finder_id: int):
 
     photo_id = finded_user[0][2]
 
-    text = create_text(user_id, premium_finder=premium_finder, show_user_link=True)
+    text = create_text(user_id, premium_finder=premium_finder)
     return text, photo_id
 
 
@@ -147,7 +149,7 @@ async def start_menu(message: types.Message):
 
     finded_user_id, text, photo_id = find_person(message.from_user.id)
     if not finded_user_id:
-        await message.answer('🤷‍♂️ Мы никого не нашли, увеличьте расстояние - /settings')
+        await message.answer('🤷‍♂️ Мы никого не нашли, увеличьте расстояние или возрастной диапазон - /settings')
         await UserCouples.start.set()
         return
     await message.answer_photo(caption=text, photo=photo_id,

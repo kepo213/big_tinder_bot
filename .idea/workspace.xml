@@ -4,8 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6f4e7bdf-980b-42de-80c1-762f8d52ad0a" name="Changes" comment="Start working on smart sender">
+    <list default="true" id="6f4e7bdf-980b-42de-80c1-762f8d52ad0a" name="Changes" comment="finish version 0.95">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/functions/check_photo.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/functions/check_photo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/functions/simple_funcs.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/functions/simple_funcs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/admin_handlers/bot_settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/all_state_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/all_state_handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/start_handlers.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/start_handlers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/users_handlers/chat_roll.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/users_handlers/chat_roll.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/users_handlers/fill_start_form.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/users_handlers/fill_start_form.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/users_handlers/find_couples.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/users_handlers/find_couples.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/users_handlers/help.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/users_handlers/help.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/handlers/users_handlers/my_profile.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/handlers/users_handlers/my_profile.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/keyboards.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/keyboards.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/sql_func.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/sql_func.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +55,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/modules/handlers/start_handlers.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
@@ -230,7 +242,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650615752728</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="finish version 0.95">
+      <created>1650691827876</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1650691827876</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -254,6 +273,7 @@
     <MESSAGE value="Continue working with sender" />
     <MESSAGE value="Add chat_roll ad" />
     <MESSAGE value="Start working on smart sender" />
-    <option name="LAST_COMMIT_MESSAGE" value="Start working on smart sender" />
+    <MESSAGE value="finish version 0.95" />
+    <option name="LAST_COMMIT_MESSAGE" value="finish version 0.95" />
   </component>
 </project>

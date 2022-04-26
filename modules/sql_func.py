@@ -92,7 +92,8 @@ def for_couples_table():
              id SERIAL PRIMARY KEY,
              tg_id BIGINT UNIQUE,
              lust_couple_id BIGINT DEFAULT 0,
-             adv BIGINT DEFAULT 0)''')
+             adv BIGINT DEFAULT 0,
+             lust_skip_list timestamp)''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -121,13 +122,14 @@ def chat_roll_table():
         with data_base.cursor() as cursor:
             cursor.execute(f'''CREATE TABLE IF NOT EXISTS chat_roll (
              id SERIAL PRIMARY KEY,
-             tg_id BIGINT,
+             tg_id BIGINT UNIQUE,
              status INTEGER DEFAULT 0,
              messages INTEGER DEFAULT 0,
              chats INTEGER DEFAULT 0,
              karma INTEGER DEFAULT 0,
              friend_id BIGINT DEFAULT 0,
-             lust_adv BIGINT DEFAULT 0)''')
+             lust_adv BIGINT DEFAULT 0,
+             activity timestamp)''')
             data_base.commit()
     except Exception as _ex:
         print('[INFO] Error while working with db', _ex)
@@ -585,14 +587,29 @@ def get_ad_by_sex(sex: str, lust_ad_id: int):
 
 # Собираем все записи с фильтрацией по 1 параметру
 def count_chats():
-    """
-    :rtype: tuple
-    """
+    """:rtype: tuple"""
     global data_base
     try:
         with data_base.cursor() as cursor:
             cursor.execute(f"SELECT COUNT(*) FROM chat_roll WHERE (friend_id != 0 AND status = 0) OR "
                            f"(status = 1)")
+            data = cursor.fetchall()
+            return data
+
+    except Exception as _ex:
+        print('[INFO] Error while working with db', _ex)
+
+
+# Собираем все записи с фильтрацией по 1 параметру
+def count_all_active_chat_roll():
+    """:rtype: tuple"""
+    global data_base
+    try:
+        time_to = datetime.datetime.now()
+        time_from = time_to - datetime.timedelta(days=1)
+        with data_base.cursor() as cursor:
+            cursor.execute(f"SELECT COUNT(*) FROM chat_roll WHERE (activity BETWEEN (%s) AND (%s))",
+                           (time_from, time_to))
             data = cursor.fetchall()
             return data
 

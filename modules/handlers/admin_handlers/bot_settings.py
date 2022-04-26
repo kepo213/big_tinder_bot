@@ -477,7 +477,7 @@ async def fill_form(message: types.Message):
         file_name = f"{str(message.from_user.id)}.jpg"
         await message.photo[-1].download(destination_file=f'modules/functions/{file_name}')
         faces_number = search_face(file_name=file_name)
-        if faces_number > 0:
+        if faces_number == 1:
             bot_id = read_by_name(table='fast_info', name='fast_1', id_data=message.from_user.id)[0][0]
             update_db(table='fast_info', name='photo_id', data=message.photo[-1].file_id, id_data=bot_id)
             await message.answer('Ваша фотография добавлена!', reply_markup=types.ReplyKeyboardRemove())

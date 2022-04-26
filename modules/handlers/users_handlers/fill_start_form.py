@@ -86,13 +86,16 @@ async def fill_form(message: types.Message):
     y = message.location.longitude
     address = cords_to_address(x=x, y=y)
     if address == 'Error':
-        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
+        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками. '
+                             'Отправьте название города еще раз!')
         return
     address, latitude, longitude, full_adress = adres_from_adres(address)
     if address == 'Error':
-        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
+        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками. '
+                             'Отправьте название города еще раз!')
         return
     update_city_db(data=address, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
+    await message.answer(f'Ваш город изменен на: <b>{full_adress}</b>')
     await message.answer('📷 Пришлите <b>Ваше фото</b> или установите фото из профиля Telegram.\n'
                          'Если в вашем профиле нет фотографий или они скрыты настройками приватности, то '
                          'фотография не загрузится и лучше загрузите ваше фото в ручную.',
@@ -105,12 +108,15 @@ async def fill_form(message: types.Message):
     try:
         city, latitude, longitude, full_adress = adres_from_adres(message.text)
         if city == 'Error':
-            await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
+            await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками. '
+                                 'Отправьте название города еще раз!')
             return
         else:
             await message.answer(f'Я нашел такой адрес:\n'
                                  f'<b>{full_adress}</b>\n'
-                                 f'Если все правильно то подтвердите.', reply_markup=confirm(without_back=True), parse_mode='html')
+                                 f'Если все правильно то подтвердите. \nЕсли Нет отправьте название города еще раз!',
+                                 reply_markup=confirm(without_back=True),
+                                 parse_mode='html')
             update_city_db(data=city, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
             await User.set_geo.set()
     except:
@@ -119,6 +125,7 @@ async def fill_form(message: types.Message):
 
 @dp.callback_query_handler(state=User.set_geo, text='yes_all_good')
 async def fill_form(call: types.CallbackQuery):
+    await bot.answer_callback_query(call.id)
     await call.message.answer('📷 Пришлите <b>Ваше фото</b> или установите фото из профиля Telegram.\n'
                               'Если в вашем профиле нет фотографий или они скрыты настройками приватности, то '
                               'фотография не загрузится и лучше загрузите ваше фото в ручную.',
@@ -132,7 +139,7 @@ async def fill_form(message: types.Message):
         file_name = f"{str(message.from_user.id)}.jpg"
         await message.photo[-1].download(destination_file=f'modules/functions/{file_name}')
         faces_number = search_face(file_name=file_name)
-        if faces_number > 0:
+        if faces_number == 1:
             update_db(name='status', data='active', id_data=message.from_user.id)
             update_db(table='fast_info', name='photo_id', data=message.photo[-1].file_id, id_data=message.from_user.id)
             await message.answer('✅ Регистрация вашей анкеты завершена!\n'
@@ -160,7 +167,7 @@ async def fill_form(message: types.Message):
         else:
             await photo.photos[0][-1].download(destination_file=f'modules/functions/{file_name}')
             faces_number = search_face(file_name=file_name)
-        if faces_number > 0:
+        if faces_number == 1:
             update_db(name='status', data='active', id_data=message.from_user.id)
             update_db(table='fast_info', name='photo_id', data=photo.photos[0][-1].file_id, id_data=message.from_user.id)
             await message.answer('✅ Регистрация вашей анкеты завершена!\n'

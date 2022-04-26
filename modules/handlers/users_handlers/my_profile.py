@@ -9,7 +9,7 @@ from aiogram.dispatcher.filters import Text
 from modules.dispatcher import bot, UserProfile
 from modules.functions.check_photo import search_face
 from modules.keyboards import user_sex_kb, user_profile_kb, close_it, get_geo, confirm, get_photo, zodiac_kb, \
-    user_verifikation_kb
+    user_verifikation_kb, main_user_kb
 from modules.functions.work_with_geo import adres_from_adres, cords_to_address
 from modules.sql_func import update_db, read_by_name, join_profile_all, update_city_db
 from modules.handlers.handlers_func import edit_text_call
@@ -125,7 +125,7 @@ async def start_menu(message: types.Message):
         await message.answer('В вашем имени имеются неприемлемые слова!')
         return
     update_db(name='user_name', data=message.text, id_data=message.from_user.id)
-    await message.answer('Ваше имя добавлено!')
+    await message.answer('Ваше имя добавлено!', reply_markup=main_user_kb())
     # Send main profile text
     await send_main_text(message.from_user.id)
 
@@ -195,12 +195,14 @@ async def start_menu(message: types.Message):
     try:
         city, latitude, longitude, full_adress = adres_from_adres(message.text)
         if city == 'Error' or city is None:
-            await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
+            await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками. '
+                                 'Отправьте название города еще раз!')
             return
         else:
             await message.answer(f'Я нашел такой адрес:\n'
                                  f'<b>{full_adress}</b>\n'
-                                 f'Если все правильно то подтвердите.', reply_markup=confirm(without_back=True),
+                                 f'Если все правильно то подтвердите.\nЕсли Нет отправьте название города еще раз!',
+                                 reply_markup=confirm(without_back=True),
                                  parse_mode='html')
             update_city_db(data=city, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
     except:
@@ -215,14 +217,17 @@ async def fill_form(message: types.Message):
     y = message.location.longitude
     address = cords_to_address(x=x, y=y)
     if address == 'Error':
-        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
+        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками. '
+                             'Отправьте название города еще раз!')
         return
     address, latitude, longitude, full_adress = adres_from_adres(address)
     if address == 'Error':
-        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками')
+        await message.answer('❌ Мы не нашли такого города, возможно вы ввели его с ошибками. '
+                             'Отправьте название города еще раз!')
         return
     update_city_db(data=address, latitude=latitude, longitude=longitude, id_data=message.from_user.id)
-    await message.answer('Ваш город изменен!')
+    await message.answer(f'Ваш город изменен на: <b>{full_adress}</b>')
+    await message.answer('Ваш город изменен!', reply_markup=main_user_kb())
     # Send main profile text
     await send_main_text(message.from_user.id)
 
@@ -230,7 +235,8 @@ async def fill_form(message: types.Message):
 # Profile CITY menu
 @dp.callback_query_handler(state=UserProfile.city, text='yes_all_good')
 async def fill_form(call: types.CallbackQuery):
-    await call.message.answer('Ваш город изменен!')
+    await bot.answer_callback_query(call.id)
+    await call.message.answer('Ваш город изменен!', reply_markup=main_user_kb())
     # Send main profile text
     await send_main_text(call.from_user.id)
 
@@ -252,10 +258,10 @@ async def fill_form(message: types.Message):
         file_name = f"{str(message.from_user.id)}.jpg"
         await message.photo[-1].download(destination_file=f'modules/functions/{file_name}')
         faces_number = search_face(file_name=file_name)
-        if faces_number > 0:
+        if faces_number == 1:
             update_db(name='status', data='active', id_data=message.from_user.id)
             update_db(table='fast_info', name='photo_id', data=message.photo[-1].file_id, id_data=message.from_user.id)
-            await message.answer('Ваша фотография добавлена!', reply_markup=types.ReplyKeyboardRemove())
+            await message.answer('Ваша фотография добавлена!', reply_markup=main_user_kb())
             # Send main profile text
             await send_main_text(message.from_user.id)
         else:
@@ -263,7 +269,7 @@ async def fill_form(message: types.Message):
                                  'Возможные причины:\n'
                                  '- на фото нет лица или не обнаружено реального человека;\n'
                                  '- высокий процент наготы;\n'
-                                 '- на фото более одного человека;')
+                                 '- на фото более одного человека;', reply_markup=main_user_kb())
         os.remove(f'modules/functions/{file_name}')
     except:
         pass
@@ -280,23 +286,23 @@ async def fill_form(message: types.Message):
         else:
             await photo.photos[0][-1].download(destination_file=f'modules/functions/{file_name}')
             faces_number = search_face(file_name=file_name)
-        if faces_number > 0:
+        if faces_number == 1:
             update_db(name='status', data='active', id_data=message.from_user.id)
             update_db(table='fast_info', name='photo_id', data=photo.photos[0][-1].file_id,
                       id_data=message.from_user.id)
-            await message.answer('Ваша фотография добавлена!', reply_markup=types.ReplyKeyboardRemove())
+            await message.answer('Ваша фотография добавлена!', reply_markup=main_user_kb())
             # Send main profile text
             await send_main_text(message.from_user.id)
         else:
             await message.answer('Во время проверки вашего фото мы обнаружили подозрительный контент!\n'
                                  'Возможные причины:\n'
                                  '- на фото нет лица или не обнаружено реального человека;\n'
-                                 '- на фото более одного человека;')
+                                 '- на фото более одного человека;', reply_markup=main_user_kb())
         if faces_number == 1000:
             return
         os.remove(f'modules/functions/{file_name}')
     elif message.text == 'Отмена':
-        await message.answer('Отменено', reply_markup=types.ReplyKeyboardRemove())
+        await message.answer('Отменено', reply_markup=main_user_kb())
         await send_main_text(message.from_user.id)
     else:
         await message.answer('Я жду от тебя фото.')
@@ -315,7 +321,7 @@ async def start_menu(call: types.CallbackQuery):
 @dp.message_handler(state=UserProfile.about)
 async def start_menu(message: types.Message):
     update_db(table='fast_info', name='about_text', data=message.text, id_data=message.from_user.id)
-    await message.answer('Добавлено!')
+    await message.answer('Добавлено!', reply_markup=main_user_kb())
     # Send main profile text
     await send_main_text(message.from_user.id)
 
@@ -334,12 +340,12 @@ async def start_menu(call: types.CallbackQuery):
 async def start_menu(message: types.Message):
     if emoji.demojize(message.text).startswith(':') and emoji.demojize(message.text).endswith(':'):
         update_db(table='fast_info', name='emoji', data=message.text, id_data=message.from_user.id)
-        await message.answer('Добавлено!')
+        await message.answer('Добавлено!', reply_markup=main_user_kb())
         # Send main profile text
         await send_main_text(message.from_user.id)
     elif message.text == '0':
         update_db(table='fast_info', name='emoji', data=message.text, id_data=message.from_user.id)
-        await message.answer('Удалено!')
+        await message.answer('Удалено!', reply_markup=main_user_kb())
         # Send main profile text
         await send_main_text(message.from_user.id)
     else:
@@ -389,7 +395,7 @@ async def start_menu(call: types.CallbackQuery):
     else:
         return
     update_db(table='fast_info', name='zodiac', data=zodiac, id_data=call.from_user.id)
-    await call.message.answer('Добавлено!')
+    await call.message.answer('Добавлено!', reply_markup=main_user_kb())
     # Send main profile text
     await send_main_text(call.from_user.id)
 
@@ -409,9 +415,9 @@ async def start_menu(call: types.CallbackQuery):
 async def start_menu(message: types.Message):
     update_db(table='fast_info', name='instagram', data=message.text, id_data=message.from_user.id)
     if message.text == '0':
-        await message.answer('Ваш инстаграм удален!')
+        await message.answer('Ваш инстаграм удален!', reply_markup=main_user_kb())
     else:
-        await message.answer('Ваш инстаграм добавлен!')
+        await message.answer('Ваш инстаграм добавлен!', reply_markup=main_user_kb())
     # Send main profile text
     await send_main_text(message.from_user.id)
 
@@ -422,10 +428,10 @@ async def start_menu(call: types.CallbackQuery):
     status = read_by_name(table='fast_info', name='search_status', id_data=call.from_user.id)[0][0]
     if status == 0:
         update_db(table='fast_info', name='search_status', data=1, id_data=call.from_user.id)
-        await edit_text_call(call=call, text='🙋Вы показали свою анкету в поиске!')
+        await edit_text_call(call=call, text='🙋Вы показали свою анкету в поиске!', k_board=main_user_kb())
     else:
         update_db(table='fast_info', name='search_status', data=0, id_data=call.from_user.id)
-        await edit_text_call(call=call, text='🙅Вы скрыли свою анкету в поиске!')
+        await edit_text_call(call=call, text='🙅Вы скрыли свою анкету в поиске!', k_board=main_user_kb())
     # Send main profile text
     await send_main_text(call.from_user.id)
 
@@ -446,7 +452,7 @@ async def start_menu(call: types.CallbackQuery):
 # Start menu
 @dp.message_handler(state=UserProfile.verification, content_types=types.ContentType.PHOTO)
 async def start_menu(message: types.Message):
-    await message.answer('Ваше фото Отправлено на верификацию')
+    await message.answer('Ваше фото Отправлено на верификацию', reply_markup=main_user_kb())
     await bot.send_photo(chat_id=constant.admin(), photo=message.photo[0].file_id,
                          caption=f'Пользователь с id: {message.from_user.id}',
                          reply_markup=user_verifikation_kb(message.from_user.id))

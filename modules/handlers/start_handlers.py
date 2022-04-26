@@ -2,8 +2,10 @@ from aiogram import types
 from main import dp
 from aiogram.dispatcher.filters import Text
 import logging
+
 from modules.functions.simple_funcs import start_reffs
 from modules.handlers.handlers_func import edit_text_call
+from modules.handlers.users_handlers.help import not_all_reg_data_text
 from modules.sql_func import insert_user, read_by_name, all_users_table, for_couples_table, likes_table, adv_table, \
     update_db, create_fast_info_table, constants_table, read_all, photo_table, reffs_table, presents_table, \
     chat_roll_table, chat_adv_table, bots_table, smart_sender
@@ -171,3 +173,9 @@ async def start_menu(call: types.CallbackQuery):
 #         await message.answer(message.forward_from_chat.id)
 #     except:
 #         pass
+
+
+@dp.message_handler(not_all_profile=True, state='*')
+async def help_menu(message: types.Message):
+    text = not_all_reg_data_text(message.from_user.id)
+    await message.answer(text)

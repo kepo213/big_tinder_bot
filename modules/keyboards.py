@@ -52,6 +52,13 @@ def get_photo(close_it: bool = False):
     return send_geo_kb
 
 
+def stop_chat_roll():
+    send_contact = KeyboardButton(text=f'❌🔍 Остановить поиск!')
+    send_geo_kb = ReplyKeyboardMarkup(resize_keyboard=True)
+    send_geo_kb.add(send_contact)
+    return send_geo_kb
+
+
 def reff_kb(url: str, back: bool = False):
     ru_lang = InlineKeyboardButton(text='🫂Пригласить друга',
                                    switch_inline_query=f"❤️‍🔥Вас пригласили в бот знакомств:\n\n{url}")

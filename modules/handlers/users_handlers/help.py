@@ -26,15 +26,8 @@ def not_all_reg_data_text(tg_ig: int):
            f'Возраст {text_data["age"]}\n' \
            f'Город {text_data["city"]}\n' \
            f'Фото {text_data["photo"]}\n' \
-           f'/profile - Заполнить профиль'
+           f'/start - Заполнить профиль с самого начала'
     return text
-
-
-# Check users profile
-@dp.message_handler(not_all_profile=True, state='*')
-async def start_menu(message: types.Message):
-    text = not_all_reg_data_text(message.from_user.id)
-    await message.answer(text)
 
 
 # Start menu

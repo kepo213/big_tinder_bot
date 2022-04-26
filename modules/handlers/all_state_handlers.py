@@ -19,7 +19,8 @@ async def start_menu(message: types.Message):
     if message.text == '/stop' or message.text == '❌ Остановить!':
         update_db(table="chat_roll", name="friend_id", data=0, id_data=message.from_user.id)
         update_db(table="chat_roll", name="friend_id", data=0, id_data=friend_id)
-        await bot.send_message(chat_id=friend_id, text='Диалог остановлен 🤧', reply_markup=types.ReplyKeyboardRemove())
+        await bot.send_message(chat_id=friend_id, text='Пользователь вышел из чата! Диалог остановлен 🤧',
+                               reply_markup=types.ReplyKeyboardRemove())
         await bot.send_message(chat_id=message.from_user.id, text='Диалог остановлен 🤧',
                                reply_markup=types.ReplyKeyboardRemove())
         await bot.send_message(chat_id=friend_id, text='📝Оцените собеседника', reply_markup=chat_likes_kb(friend_id))
@@ -52,7 +53,8 @@ async def start_menu(message: types.Message):
     if message.text == '/stop' or message.text == '❌ Остановить!':
         update_db(table="chat_roll", name="friend_id", data=0, id_data=message.from_user.id)
         update_db(table="chat_roll", name="friend_id", data=0, id_data=friend_id)
-        await bot.send_message(chat_id=friend_id, text='Диалог остановлен 🤧', reply_markup=types.ReplyKeyboardRemove())
+        await bot.send_message(chat_id=friend_id, text='Пользователь вышел из чата! Диалог остановлен 🤧',
+                               reply_markup=types.ReplyKeyboardRemove())
         await bot.send_message(chat_id=message.from_user.id, text='Диалог остановлен 🤧',
                                reply_markup=types.ReplyKeyboardRemove())
         await show_chat_roll_adv(friend_id, message.from_user.id)
@@ -99,11 +101,16 @@ async def start_menu(call: types.CallbackQuery):
     if call_text.startswith('verifikation_close_'):
         user_id = call_text.split('verifikation_close_')[1]
         await call.answer("Отклонено")
-        await bot.send_message(chat_id=user_id, text='Ваше фото не прошло верификацию!')
+        await bot.send_message(chat_id=user_id,
+                               text='❌ Ваша заявка на верификацию профиля отклонена.\n\n'
+                                    'Причины: \n'
+                                    '- отправленная фотография не совпадает с фотографией вашего профиля\n'
+                                    '- вы не сфотографировались как показанно на примере, '
+                                    'важно не забывать о поднятой руке как на примере')
     elif call_text.startswith('verifikation_'):
         user_id = call_text.split('verifikation_')[1]
         update_db(table='fast_info', name='photo_good', data=1, id_data=user_id)
-        await bot.send_message(chat_id=user_id, text='Поздравляю, вы прошли верификацию!')
+        await bot.send_message(chat_id=user_id, text='✅ Поздравляю, вы прошли верификацию!')
         await edit_text_call(call, f"Подтверждено {user_id}")
 
 

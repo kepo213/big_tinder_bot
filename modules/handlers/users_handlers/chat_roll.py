@@ -1,23 +1,28 @@
+import datetime
+
 from aiogram import types
 from main import dp
 from aiogram.dispatcher.filters import Text
 
 from modules.dispatcher import bot, UserChatRoll
-from modules.keyboards import chat_roll, chat_roll_start, users_score_kb, chat_settings
-from modules.sql_func import update_db, read_by_name, search_person, join_profile_all, read_all_2, \
-    insert_likes_presents_db, join_chat_stata, count_refs_for_chats, join_chat_data, grow_chat_chats_db, count_chats, \
-    join_chat_data_sex
-from modules.handlers.handlers_func import edit_text_call
-from modules.functions.simple_funcs import update_age_period, get_right_left_btn, chat_roll_score
+from modules.keyboards import chat_roll, chat_roll_start, users_score_kb, chat_settings, stop_chat_roll
+from modules.sql_func import update_db, read_by_name, join_chat_stata, count_refs_for_chats, join_chat_data, \
+    grow_chat_chats_db, count_chats, \
+    join_chat_data_sex, count_all_active_chat_roll
+from modules.functions.simple_funcs import chat_roll_score
 
 
 # Profile menu
 @dp.message_handler(commands=['chat'], state='*')
+@dp.message_handler(Text(equals='❌🔍 Остановить поиск!', ignore_case=True), state=UserChatRoll.start)
 @dp.message_handler(Text(equals='🔙Главное меню', ignore_case=True), state=UserChatRoll.settings)
 @dp.message_handler(Text(equals='💬 Чат Рулетка', ignore_case=True), state='*')
 async def start_menu(message: types.Message):
     count_chat_users = count_chats()[0][0]
-    await message.answer(f'👥 Сейчас пользователей онлайн: {count_chat_users}', parse_mode='html',
+    active_chat_users = count_all_active_chat_roll()[0][0]
+    await message.answer(f'💬 Чат Рулетка\n\n'
+                         f'🙋‍♂️Активные за 24 часа: {active_chat_users}\n'
+                         f'👥 Сейчас пользователей онлайн: {count_chat_users}', parse_mode='html',
                          reply_markup=chat_roll())
     await UserChatRoll.start.set()
 
@@ -44,7 +49,8 @@ async def start_menu(message: types.Message):
                              f'<em>Вы хороший собеседник!</em>', parse_mode='html')
 
     update_db(table="chat_roll", name="status", data=1, id_data=message.from_user.id)
-    await message.answer('Ищу собеседника... 🔍')
+    update_db(table="chat_roll", name="activity", data=datetime.datetime.now(), id_data=message.from_user.id)
+    await message.answer('Ищу собеседника... 🔍', reply_markup=stop_chat_roll())
     if int(premium) == 1:
         search_sex = read_by_name(table='fast_info', name='search_sex', id_data=message.from_user.id)[0][0]
         if str(search_sex) == 'all':
